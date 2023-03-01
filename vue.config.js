@@ -27,6 +27,14 @@ module.exports = defineConfig({
             }
           ]
         },
+        mac: {
+          icon: "build/icons/icon.icns",
+          target: [
+            {
+              target: "dmg"
+            }
+          ]
+        },
         nsis: {
           oneClick: false, // 一键安装
           // "guid": "xxxx", //注册表名字，不推荐修改

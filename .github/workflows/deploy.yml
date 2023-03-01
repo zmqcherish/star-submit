@@ -10,10 +10,10 @@ on:
 
 jobs:
   deploy:
-    runs-on: windows-latest # 使用ubuntu系统镜像运行自动化脚本
-    # strategy:
-    #   matrix:
-    #     os: [windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }} # 使用ubuntu系统镜像运行自动化脚本
+    strategy:
+      matrix:
+        os: [windows-latest, macos-latest]
     steps: # 自动化步骤
       - name: check out code
         uses: actions/checkout@main # 第一步，下载代码仓库
@@ -30,16 +30,31 @@ jobs:
         run: npm install
 
       # 打包
-      - name: package
+      - name: package-win
+        if: startsWith(matrix.os, 'windows')
+        run: npm run electron:build-win
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      
+      - name: package-mac
+        if: startsWith(matrix.os, 'macos')
         run: npm run electron:build
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: Zip the Build
-        run: zip -r release.zip dist_electron/
-      
+       # step5: cleanup artifacts in dist_electron
+      # - name: cleanup artifacts
+      #   run: |
+      #     npx rimraf "dist_electron/!(*.exe|*.dmg)"
+      # step6: upload artifacts
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.os }}
+          path: dist_electron
+
       - name: create release
         uses: softprops/action-gh-release@v1
         with:
-          files: release.zip
+          files: dist_electron/**
 
