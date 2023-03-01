@@ -33,7 +33,7 @@ jobs:
       - name: package
         run: npm run electron:build
         env:
-          GH_TOKEN: ${{ secrets.G_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Zip the Build
         run: zip -r release.zip dist_electron/
