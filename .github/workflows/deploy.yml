@@ -11,9 +11,9 @@ on:
 jobs:
   deploy:
     runs-on: windows-latest # 使用ubuntu系统镜像运行自动化脚本
-    strategy:
-      matrix:
-        os: [windows-latest, macos-latest]
+    # strategy:
+    #   matrix:
+    #     os: [windows-latest, macos-latest]
     steps: # 自动化步骤
       - name: check out code
         uses: actions/checkout@main # 第一步，下载代码仓库
