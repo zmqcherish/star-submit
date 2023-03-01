@@ -28,7 +28,7 @@ module.exports = defineConfig({
           ]
         },
         mac: {
-          icon: "build/icons/icon.icns",
+        //   icon: "build/icons/icon.icns",
           target: [
             {
               target: "dmg"
