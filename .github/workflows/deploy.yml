@@ -1,4 +1,4 @@
-name: Deploy site files
+name: release site files
 
 on:
   push:
@@ -19,8 +19,7 @@ jobs:
       # 安装node
       - name: install node
         # 使用action库 actions/setup-node 安装node
-        uses: actions/setup-node@v1
-        with:
+        uses: actions/setup-node@v3
           node-version: 16.13.1
 
         #安装依赖
