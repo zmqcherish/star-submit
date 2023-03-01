@@ -1,0 +1,41 @@
+name: Deploy site files
+
+on:
+  push:
+    branches:
+      - main # 只在master上push触发部署
+    paths-ignore: # 下列文件的变更不触发部署，可以自行添加
+      - README.md
+      - 'py/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest # 使用ubuntu系统镜像运行自动化脚本
+
+    steps: # 自动化步骤
+      - name: check out code
+        uses: actions/checkout@main # 第一步，下载代码仓库
+       
+      # 安装node
+      - name: install node
+        # 使用action库 actions/setup-node 安装node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16.13.1
+
+        #安装依赖
+      - name: npm
+        run: npm install
+
+      # 打包
+      - name: package
+        run: npm run electron:build
+
+      - name: Zip the Build
+        run: zip -r release.zip dist_electron/
+      
+      - name: create release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: release.zip
+
