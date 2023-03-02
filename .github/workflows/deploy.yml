@@ -73,12 +73,13 @@ jobs:
           # GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Deploy to Server # 第二步，rsync推文件
-        uses: garygrossgarten/github-action-scp@release
-        with:
-          privateKey: ${{ secrets.DEPLOY_KEY }} # 引用配置，SSH私钥
-          port: "22" # SSH端口
-          local: "dist_electron" # 要推送的文件夹，路径相对于代码仓库的根目录
-          host: ${{ secrets.SSH_HOST }} # 引用配置，服务器的host名（IP或者域名domain.com）
-          username: ${{ secrets.SSH_USERNAME }} # 引用配置，服务器登录名
-          remote: /data/share/${{ matrix.os }}/ # 部署到目标文件夹
+        uses: easingthemes/ssh-deploy@main
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }} # 引用配置，SSH私钥
+          ARGS: "-rlgoDzvc -i"
+          REMOTE_PORT: "22" # SSH端口
+          SOURCE: "dist_electron/" # 要推送的文件夹，路径相对于代码仓库的根目录
+          REMOTE_HOST: ${{ secrets.SSH_HOST }} # 引用配置，服务器的host名（IP或者域名domain.com）
+          REMOTE_USER: ${{ secrets.SSH_USERNAME }} # 引用配置，服务器登录名
+          TARGET: /data/share/${{ matrix.os }}/ # 部署到目标文件夹
 
