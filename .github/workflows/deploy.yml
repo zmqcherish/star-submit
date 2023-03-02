@@ -1,4 +1,4 @@
-name: release site files
+name: release exec
 
 on:
   push:
@@ -20,9 +20,7 @@ jobs:
       - name: check out code
         uses: actions/checkout@main # 第一步，下载代码仓库
        
-      # 安装node
       - name: install node
-        # 使用action库 actions/setup-node 安装node
         uses: actions/setup-node@v3
         with:
           node-version: 16.13.1
@@ -45,12 +43,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
         # step5: cleanup artifacts in dist_electron
-      - name: cleanup artifacts for windows
+      - name: cleanup artifacts for win
         if: startsWith(matrix.os, 'windows')
         run: |
           npx rimraf "dist_electron/!(*.exe)"
 
-      - name: cleanup artifacts for macosZ
+      - name: cleanup artifacts for mac
         if: startsWith(matrix.os, 'macos')
         run: |
           npx rimraf "dist_electron/!(*.dmg)"
@@ -69,17 +67,15 @@ jobs:
           # tag_name: ${{ github.ref }}
           # release_name: Release ${{ github.ref }}
           token: ${{ secrets.GH_TOKEN }}
-        # env:
-          # GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
-      - name: Deploy to Server # 第二步，rsync推文件
-        uses: easingthemes/ssh-deploy@main
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }} # 引用配置，SSH私钥
-          ARGS: "-rlgoDzvc -i"
-          REMOTE_PORT: "22" # SSH端口
-          SOURCE: "dist_electron/" # 要推送的文件夹，路径相对于代码仓库的根目录
-          REMOTE_HOST: ${{ secrets.SSH_HOST }} # 引用配置，服务器的host名（IP或者域名domain.com）
-          REMOTE_USER: ${{ secrets.SSH_USERNAME }} # 引用配置，服务器登录名
-          TARGET: /data/share/${{ matrix.os }}/ # 部署到目标文件夹
+      # - name: Deploy to Server # 第二步，rsync推文件
+      #   uses: easingthemes/ssh-deploy@main
+      #   env:
+      #     SSH_PRIVATE_KEY: ${{ secrets.DEPLOY_KEY }} # 引用配置，SSH私钥
+      #     ARGS: "-rlgoDzvc -i"
+      #     REMOTE_PORT: "22" # SSH端口
+      #     SOURCE: "dist_electron/" # 要推送的文件夹，路径相对于代码仓库的根目录
+      #     REMOTE_HOST: ${{ secrets.SSH_HOST }} # 引用配置，服务器的host名（IP或者域名domain.com）
+      #     REMOTE_USER: ${{ secrets.SSH_USERNAME }} # 引用配置，服务器登录名
+      #     TARGET: /data/share/${{ matrix.os }}/ # 部署到目标文件夹
 

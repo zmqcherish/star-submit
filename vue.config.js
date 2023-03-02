@@ -4,7 +4,7 @@ module.exports = defineConfig({
   pluginOptions: {
     electronBuilder: {
       // nodeIntegration: true,
-    //   preload: 'src/preload.ts',
+      preload: 'src/preload.js',
       builderOptions: {
         productName: "star", // 项目名，也是生成exe文件的前缀名
         appId: "star-v1", // 包名e7
