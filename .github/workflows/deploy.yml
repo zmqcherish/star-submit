@@ -1,5 +1,8 @@
 name: release site files
 
+permissions:
+  contents: write
+
 on:
   push:
     tags:
