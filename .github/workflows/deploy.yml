@@ -1,8 +1,5 @@
 name: release site files
 
-permissions:
-  contents: write
-
 on:
   push:
     tags:
@@ -14,6 +11,8 @@ on:
 jobs:
   deploy:
     runs-on: ${{ matrix.os }} # 使用ubuntu系统镜像运行自动化脚本
+    permissions:
+      contents: write
     strategy:
       matrix:
         os: [windows-latest, macos-latest]
