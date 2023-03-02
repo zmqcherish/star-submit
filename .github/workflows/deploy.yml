@@ -66,20 +66,19 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: dist_electron/**
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          # tag_name: ${{ github.ref }}
+          # release_name: Release ${{ github.ref }}
           token: ${{ secrets.GH_TOKEN }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+        # env:
+          # GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Deploy to Server # 第二步，rsync推文件
-        uses: AEnterprise/rsync-deploy@v1.0 # 使用别人包装好的步骤镜像
-        env:
-          DEPLOY_KEY: ${{ secrets.DEPLOY_KEY }} # 引用配置，SSH私钥
-          ARGS: -avz --delete --exclude='*.pyc' # rsync参数，排除.pyc文件
-          SERVER_PORT: "22" # SSH端口
-          FOLDER: "./dist_electron" # 要推送的文件夹，路径相对于代码仓库的根目录
-          SERVER_IP: ${{ secrets.SSH_HOST }} # 引用配置，服务器的host名（IP或者域名domain.com）
-          USERNAME: ${{ secrets.SSH_USERNAME }} # 引用配置，服务器登录名
-          SERVER_DESTINATION: /data/share/star/ # 部署到目标文件夹
+        uses: garygrossgarten/github-action-scp@release
+        with:
+          privateKey: ${{ secrets.DEPLOY_KEY }} # 引用配置，SSH私钥
+          port: "22" # SSH端口
+          local: "dist_electron" # 要推送的文件夹，路径相对于代码仓库的根目录
+          host: ${{ secrets.SSH_HOST }} # 引用配置，服务器的host名（IP或者域名domain.com）
+          username: ${{ secrets.SSH_USERNAME }} # 引用配置，服务器登录名
+          remote: /data/share/${{ matrix.os }}/ # 部署到目标文件夹
 
