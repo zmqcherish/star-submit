@@ -1,30 +1,109 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+	<n-config-provider :theme="darkTheme" style="height:100%">
+		<n-space vertical >
+			<n-layout has-sider>
+				<n-layout-sider
+					bordered
+					collapse-mode="width"
+					:collapsed-width="64"
+					:width="240"
+					:collapsed="collapsed"
+				>
+					<n-menu
+						:collapsed="collapsed"
+						:collapsed-width="64"
+						:collapsed-icon-size="22"
+						:options="menuOptions"
+						:on-update:value="menuChange"
+					/>
+				</n-layout-sider>
+				<n-layout v-if="menuKey == 'main'">
+					<span>欢迎</span>
+				</n-layout>
+				<n-layout v-if="menuKey == 'device'">
+					<span>设备</span>
+				</n-layout>
+				<n-layout v-if="menuKey == 'setting'">
+					<span>设置</span>
+				</n-layout>
+			</n-layout>
+		</n-space>
+	</n-config-provider>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script lang="ts">
+import { h, ref, defineComponent, Component } from "vue";
+import {
+	darkTheme,
+	NConfigProvider,
+	NIcon,
+	NLayout,
+	NSpace,
+	NLayoutSider,
+	NMenu,
+} from "naive-ui";
+import type { MenuOption } from "naive-ui";
+import {
+	BookmarkOutline,
+	CaretDownOutline,
+	BookOutline,
+} from "@vicons/ionicons5";
+
+const menuOptions: MenuOption[] = [
+	{
+		label: "主页",
+		key: "main",
+		icon: renderIcon(BookmarkOutline),
+	},
+	{
+		label: "我的设备",
+		key: "device",
+		icon: renderIcon(CaretDownOutline),
+	},
+	{
+		label: "设置",
+		key: "setting",
+		icon: renderIcon(BookOutline),
+	},
+];
+
+function renderIcon(icon: Component) {
+	return () => h(NIcon, null, { default: () => h(icon) });
 }
 
-nav {
-  padding: 30px;
+export default defineComponent({
+	components: {
+		NLayout,
+		NSpace,
+		NLayoutSider,
+		NMenu,
+		NConfigProvider
+	},
+	setup() {
+		let menuKey = ref("main");
+		let collapsed = ref(false);
+		// const renderMenuLabel = (option: MenuOption) => {
+		// 	if ("href" in option) {
+		// 		return h(
+		// 			"a",
+		// 			{ href: option.href, target: "_blank" },
+		// 			option.label as string
+		// 		);
+		// 	}
+		// 	return option.label as string;
+		// };
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
+		const menuChange = (key: string, item: MenuOption) => {
+			menuKey.value = key;
+		};
 
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
+		return {
+			menuKey,
+			collapsed,
+			menuOptions,
+			menuChange,
+			darkTheme,
+		};
+	},
+});
+</script>

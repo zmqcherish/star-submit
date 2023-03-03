@@ -7,18 +7,23 @@ npm install
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npm run dev
 ```
 
-### Compiles and minifies for production
+### 发布release版本
 ```
-npm run build
+git add *
+git commit -m "***"
+git push
+
+git tag v0.1.0
+git push origin --tags
 ```
 
-### Lints and fixes files
+### 帮助
+# Github下载速度较慢可以借助[DoGet](https://doget.nocsdn.com/#/)工具
+# electron-download 里模块的安装异常，可以通过设置electron代理解决
 ```
-npm run lint
+npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

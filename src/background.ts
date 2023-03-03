@@ -1,6 +1,6 @@
 'use strict'
 const path = require('path')
-import { app, protocol, BrowserWindow, ipcMain, dialog } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain, dialog, nativeTheme } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 // import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
@@ -13,8 +13,8 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
 	// Create the browser window.
 	const win = new BrowserWindow({
-		width: 500,
-		height: 500,
+		width: 1000,
+		height: 600,
 		resizable: false,
 		webPreferences: {
 
@@ -45,12 +45,12 @@ async function createWindow() {
 				extensions: ['jpg', 'png']
 			}],
 		})
-		console.log(file);
 		if(file) {
 			return file[0];
 		}
 	})
 
+	// nativeTheme.themeSource = 'dark';
 
 	if (process.env.WEBPACK_DEV_SERVER_URL) {
 		// Load the url of the dev server if in development mode
