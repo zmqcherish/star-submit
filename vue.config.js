@@ -1,13 +1,15 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
-  transpileDependencies: true,
+  transpileDependencies: [
+	/.[/\\]node_modules[/\\]node-json-db[/\\]dist[/\\]/,
+  ],
   pluginOptions: {
     electronBuilder: {
       // nodeIntegration: true,
       preload: 'src/preload.js',
       builderOptions: {
         productName: "star", // 项目名，也是生成exe文件的前缀名
-        appId: "star-v1", // 包名e7
+        appId: "star-v1", // 包名
         copyright: "@cherish", // 版权信息
         compression: "store", // "store" | "normal" | "maximum" 打包压缩情况(store 相对较快)，store 39749kb, maximum 39186kb
         directories: {

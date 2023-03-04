@@ -5,6 +5,7 @@
     "strict": true,
     "jsx": "preserve",
     "moduleResolution": "node",
+	"noImplicitAny": false,
 	"strictNullChecks": false,
     "skipLibCheck": true,
     "esModuleInterop": true,

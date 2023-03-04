@@ -1,9 +1,10 @@
 export interface IElectronAPI {
 	getImg: () => Promise<void>;
-  }
-  
-  declare global {
+	testdb: () => void;
+}
+
+declare global {
 	interface Window {
-	  electronAPI: IElectronAPI;
+		electronAPI: IElectronAPI;
 	}
-  }
+}

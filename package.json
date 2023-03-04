@@ -1,6 +1,6 @@
 {
   "name": "star-submit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -11,12 +11,14 @@
     "electron:serve": "vue-cli-service electron:serve",
     "dev": "vue-cli-service electron:serve",
     "postinstall": "electron-builder install-app-deps",
-    "postuninstall": "electron-builder install-app-deps"
+    "postuninstall": "electron-builder install-app-deps",
+    "icon": "electron-icon-builder --input=./icon.png --output=build --flatten"
   },
   "main": "background.js",
   "dependencies": {
     "core-js": "^3.8.3",
     "imageinfo": "^1.0.4",
+    "node-json-db": "^2.1.4",
     "sharp": "^0.31.3",
     "ts-loader": "~8.2.0",
     "vue": "^3.2.13",
@@ -37,6 +39,7 @@
     "@vue/eslint-config-typescript": "^9.1.0",
     "electron": "^13.0.0",
     "electron-devtools-installer": "^3.1.0",
+    "electron-icon-builder": "^2.0.1",
     "eslint": "^7.32.0",
     "eslint-plugin-vue": "^8.0.3",
     "naive-ui": "^2.34.3",
