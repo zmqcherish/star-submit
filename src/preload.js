@@ -1,27 +1,9 @@
 const fs = require('fs')
 const imginfo = require('imageinfo')
 // const sharp = require('sharp');
-
 const { contextBridge, ipcRenderer } = require('electron')
 
-
-
-
-
-import { testFunc } from './utils/db'
-
-
-
-
-
-
-
-
-
-
-
-
-
+import { getStoreVal, setStoreVal } from './utils/db'
 
 
 const getImg = async () => {
@@ -40,27 +22,19 @@ const getImg = async () => {
 	return "data:image/jpg;base64," + data.toString('base64');
 }
 
-const testdb = async () => {
-// 	await db.push("/test1","super test");
 
-// // It also create automatically the hierarchy when pushing new data for a DataPath that doesn't exists
-// await db.push("/test2/my/test",5);
-
-// // You can also push directly objects
-// await db.push("/test3", {test:"test", json: {test:["test"]}});
-
-// // If you don't want to override the data but to merge them
-// // The merge is recursive and work with Object and Array.
-// await db.push("/test3", {
-//     new:"cool",
-//     json: {
-//         important : 5
-//     }
-// }, false);
+const getData = (k) => {
+	if(k == 'camera' || k == 'lens') {
+		return getStoreVal(k) || [];
+	}
 }
 
+const setData = (k, v) => {
+	setStoreVal(k, v);
+}
 
 contextBridge.exposeInMainWorld('electronAPI', {
-	testdb,
+	getData,
+	setData,
 	getImg
 })

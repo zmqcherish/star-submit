@@ -2,6 +2,8 @@
 const path = require('path')
 import { app, protocol, BrowserWindow, ipcMain, dialog, nativeTheme, Menu } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+const electronStore = require('electron-store');
+electronStore.initRenderer();
 // import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
 const isDevelopment = process.env.NODE_ENV !== 'production'
 

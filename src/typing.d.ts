@@ -1,6 +1,7 @@
 export interface IElectronAPI {
 	getImg: () => Promise<void>;
-	testdb: () => void;
+	getData: (k) => Any;
+	setData: (k, v) => void;
 }
 
 declare global {

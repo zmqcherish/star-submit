@@ -16,11 +16,11 @@
 </template>
 
 <script lang="ts">
-import { h, defineComponent, toRefs } from "vue";
+import { h, defineComponent } from "vue";
 import { NButton, NResult, NDataTable } from "naive-ui";
 import type { DataTableColumns } from "naive-ui";
 
-const createColumns = ({opt}: {opt: (row: any) => void;}): DataTableColumns<any> => {
+const createColumns = ({opt}: {opt: (row) => void;}): DataTableColumns<any> => {
 	return [
 		{
 			title: "名称",
@@ -61,7 +61,7 @@ export default defineComponent({
 	},
 	emits: ["del", ],
 	setup(props, ctx) {
-		const del = (row: any) => {
+		const del = (row) => {
 			ctx.emit("del", row);
 		};
 

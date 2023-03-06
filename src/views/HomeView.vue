@@ -15,7 +15,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive } from "vue";
+import { ref, reactive } from "vue";
 // import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 import { NButton } from 'naive-ui'
 
