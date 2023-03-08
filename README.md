@@ -16,7 +16,7 @@ git add *
 git commit -m "***"
 git push
 
-git tag v0.1.0
+git tag v0.2.3
 git push origin --tags
 ```
 

@@ -1,9 +1,9 @@
 <template>
-	<n-config-provider :theme="darkTheme">
+	<n-config-provider :theme="darkTheme" :locale="zhCN" :date-locale="dateZhCN">
 		<n-space vertical>
 			<n-layout
 				has-sider
-				style="height: 560px;"
+				style="height: 760px;"
 				bordered
 			>
 				<n-layout-sider
@@ -21,10 +21,10 @@
 						:on-update:value="menuChange"
 					/>
 				</n-layout-sider>
-				<n-layout v-if="menuKey == 'main'">
-					<span>欢迎</span>
+				<n-layout v-if="menuKey == 'main'" style="margin: 20px 10px">
+					<main-view></main-view>
 				</n-layout>
-				<n-layout v-if="menuKey == 'device'" style="margin: 20px 10px">
+				<n-layout v-if="menuKey == 'device'" style="padding: 20px">
 					<device-view></device-view>
 				</n-layout>
 				<n-layout v-if="menuKey == 'setting'">
@@ -36,9 +36,12 @@
 </template>
 
 <script lang="ts">
+import MainView from "@/views/MainView.vue";
 import DeviceView from "@/views/DeviceView.vue";
 import { h, ref, defineComponent, Component } from "vue";
 import {
+	zhCN,
+	dateZhCN,
 	darkTheme,
 	NConfigProvider,
 	NIcon,
@@ -56,7 +59,7 @@ import {
 
 const menuOptions: MenuOption[] = [
 	{
-		label: "主页",
+		label: "邮件内容",
 		key: "main",
 		icon: renderIcon(BookmarkOutline),
 	},
@@ -79,6 +82,7 @@ function renderIcon(icon: Component) {
 
 export default defineComponent({
 	components: {
+		MainView,
 		DeviceView,
 		NLayout,
 		NSpace,
@@ -99,7 +103,7 @@ export default defineComponent({
 			collapsed,
 			menuOptions,
 			menuChange,
-			darkTheme,
+			darkTheme,dateZhCN,zhCN
 		};
 	},
 });

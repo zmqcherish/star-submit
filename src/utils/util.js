@@ -18,10 +18,13 @@ const uuid = () => {
 	return uuid;
 }
 
+const getInfoRes = (data) => {
+	return null;
+}
 
 export {
 	uuid,
-	// getColor,
+	getInfoRes,
 	// showTips,
 	// copyText
 }

@@ -66,7 +66,7 @@ export default defineComponent({
 			if(!addValue.value) {
 				return;
 			}
-			let newItem = { id: uuid(), title: addValue.value };
+			let newItem = { value: uuid(), label: addValue.value };
 			if(addType.value == 1) {
 				cameras.value.push(newItem);
 				window.electronAPI.setData("camera", toRaw(cameras.value));

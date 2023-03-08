@@ -24,7 +24,7 @@ const createColumns = ({opt}: {opt: (row) => void;}): DataTableColumns<any> => {
 	return [
 		{
 			title: "名称",
-			key: "title",
+			key: "label",
 		},
 		{
 			title: "",
