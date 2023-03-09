@@ -25,10 +25,10 @@ const getImg = async () => {
 		newHeight = 600;
 		newWidth = parseInt(newHeight * oldWidth / oldHeight);
 	}
-	console.log(11, newHeight);
 	let newImgData = await sharp(path).resize(newWidth, newHeight).toBuffer();
 	// console.log("Size:", data.length, "bytes");
 	// console.log("Dimensions:", info.width, "x", info.height);
+	setData('wallpaper', path);
 	return "data:image/jpg;base64," + newImgData.toString('base64');
 }
 
@@ -37,6 +37,7 @@ const getData = (k) => {
 	if(k == 'camera' || k == 'lens') {
 		return getStoreVal(k) || [];
 	}
+	return getStoreVal(k);
 }
 
 const setData = (k, v) => {
@@ -47,9 +48,15 @@ const copyText = (txt) => {
 	clipboard.writeText(txt);
 }
 
+// const setSysWallpaper = async () => {
+// 	const path = getData('wallpaper');
+// 	await setWallpaper(path);
+// }
+
 contextBridge.exposeInMainWorld('electronAPI', {
 	getData,
 	setData,
 	getImg,
-	copyText
+	copyText,
+	// setSysWallpaper
 })

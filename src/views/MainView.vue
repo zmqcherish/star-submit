@@ -1,6 +1,5 @@
 <template>
 	<n-layout position="absolute">
-
 		<n-layout-header style="height: 60px;">
 			<n-space justify="center">
 				<n-steps
@@ -53,15 +52,12 @@
 					require-mark-placement="right-hanging"
 					:style="{width: '500px'}"
 				>
-					<n-form-item
+					<input-form
 						label="作品标题"
 						path="title"
-					>
-						<n-input
-							v-model:value="info.title"
-							placeholder="作品标题"
-						/>
-					</n-form-item>
+						place-holder="作品标题"
+						v-model:value="info.title"
+					></input-form>
 					<n-form-item
 						label="作品说明"
 						path="desc"
@@ -73,6 +69,12 @@
 							:autosize="{minRows: 3,maxRows: 5}"
 						/>
 					</n-form-item>
+					<input-form
+						label="拍摄地点"
+						path="place"
+						place-holder="拍摄地点"
+						v-model:value="info.place"
+					></input-form>
 					<n-form-item
 						label="拍摄日期"
 						path="date"
@@ -80,6 +82,7 @@
 						<n-date-picker
 							v-model:value="info.date"
 							type="date"
+							:is-date-disabled="dateDisabled"
 						/>
 					</n-form-item>
 					<n-form-item
@@ -89,6 +92,7 @@
 						<n-select
 							v-model:value="info.camera"
 							:options="cameras"
+							value-field="label"
 						/>
 					</n-form-item>
 					<n-form-item
@@ -98,44 +102,33 @@
 						<n-select
 							v-model:value="info.lens"
 							:options="lens"
+							value-field="label"
 						/>
 					</n-form-item>
-					<n-form-item
+					<input-form
 						label="光圈"
 						path="aperture"
-					>
-						<n-input
-							v-model:value="info.aperture"
-							placeholder="光圈，如 F4 "
-						/>
-					</n-form-item>
-					<n-form-item
+						place-holder="光圈，如 F4"
+						v-model:value="info.aperture"
+					></input-form>
+					<input-form
 						label="快门"
 						path="shutter"
-					>
-						<n-input
-							v-model:value="info.shutter"
-							placeholder="快门，如 1/200s "
-						/>
-					</n-form-item>
-					<n-form-item
+						place-holder="快门，如 1/200s"
+						v-model:value="info.shutter"
+					></input-form>
+					<input-form
 						label="ISO"
 						path="iso"
-					>
-						<n-input
-							v-model:value="info.iso"
-							placeholder="ISO"
-						/>
-					</n-form-item>
-					<n-form-item
+						place-holder="ISO，如 100"
+						v-model:value="info.iso"
+					></input-form>
+					<input-form
 						label="其它说明"
 						path="other"
-					>
-						<n-input
-							v-model:value="info.other"
-							placeholder="其它说明(堆栈、合成等)"
-						/>
-					</n-form-item>
+						place-holder="其它说明(堆栈、合成等)"
+						v-model:value="info.other"
+					></input-form>
 				</n-form>
 			</n-space>
 
@@ -144,8 +137,8 @@
 				v-if="currentStep == 3"
 			>
 				<n-gi
-					v-for="i in 5"
-					:key="i"
+					v-for="(item, index) in infoRes"
+					:key="index"
 					style="width:400px;height:300px"
 				>
 					<n-space vertical>
@@ -153,11 +146,12 @@
 							这个<n-divider vertical /><n-button
 								tertiary
 								round
-								size="small" @click="copy()"
+								size="small"
+								@click="copy()"
 							>
 								复制</n-button></n-space>
 						<n-input
-							v-model:value="info.desc"
+							v-model:value="infoRes[index]"
 							type="textarea"
 							:autosize="{minRows: 5,maxRows: 10}"
 						/>
@@ -196,7 +190,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
+import { defineComponent, ref, toRaw } from "vue";
+import InputForm from "@/components/InputForm.vue";
 import { ChevronBack, ChevronForward, ImageOutline } from "@vicons/ionicons5";
 import {
 	StepsProps,
@@ -219,11 +214,27 @@ import {
 	NGrid,
 	NGi,
 	NDivider,
+	FormRules,
 } from "naive-ui";
-import { getInfoRes } from "@/utils/util";
+import { getInfoRes, formatTime, getRule } from "@/utils/util";
+
+const formRules: FormRules = {
+	title: getRule("标题不能为空"),
+	desc: getRule("描述不能为空"),
+	place: getRule("地点不能为空"),
+	date: {
+		type: "number",
+		required: true,
+		trigger: ["blur", "change"],
+		message: "请选择",
+	},
+	camera: getRule('请选择'),
+	lens: getRule('请选择')
+};
 
 export default defineComponent({
 	components: {
+		InputForm,
 		ChevronBack,
 		ChevronForward,
 		NIcon,
@@ -253,8 +264,8 @@ export default defineComponent({
 		let imgWidth = ref(600);
 		let imgHeight = ref(0);
 
-		let t1 = window.electronAPI.getData("camera");
-		let t2 = window.electronAPI.getData("lens");
+		const t1 = window.electronAPI.getData("camera");
+		const t2 = window.electronAPI.getData("lens");
 		let cameras = ref(t1);
 		let lens = ref(t2);
 
@@ -262,6 +273,7 @@ export default defineComponent({
 			title: null,
 			desc: null,
 			date: null,
+			place: null,
 			camera: null,
 			lens: null,
 			shutter: null,
@@ -272,58 +284,35 @@ export default defineComponent({
 
 		let infoRes = ref([]);
 
-		const formRules = {
-			title: {
-				required: true,
-				trigger: ["blur"],
-				message: "标题不能为空",
-			},
-			desc: {
-				required: true,
-				trigger: ["blur"],
-				message: "描述不能为空",
-			},
-			date: {
-				required: true,
-				trigger: ["blur"],
-				message: "请选择",
-			},
-			camera: {
-				required: true,
-				trigger: ["blur"],
-				message: "请选择",
-			},
-			lens: {
-				required: true,
-				trigger: ["blur"],
-				message: "请选择",
-			},
-		};
-
 		const loadImg = async () => {
-			console.log(11);
-			let imgPath = await window.electronAPI.getImg();
-			imgSrc.value = imgPath;
+			let imgData = await window.electronAPI.getImg();
+			imgSrc.value = imgData;
+
+			// const path = window.electronAPI.getData('wallpaper');
+			// await setWallpaper(path);
 		};
 
 		const next = () => {
 			if (currentStep.value == 1) {
 				if (!imgSrc.value) {
-					return;
+					// return;
 				}
 				currentStep.value++;
 			} else if (currentStep.value == 2) {
+				console.log(toRaw(info.value));
+				console.log(formatTime(toRaw(info.value)["date"]));
+
 				formRef.value?.validate((errors) => {
 					if (!errors) {
-						// getInfoRes();
-
-						currentStep.value++
+						let t = getInfoRes(toRaw(info.value));
+						infoRes.value.push(t);
+						currentStep.value++;
 					} else {
 						console.log(errors);
 					}
 				});
 			}
-			if (currentStep.value < 3) currentStep.value++;
+			// if (currentStep.value < 3) currentStep.value++;
 		};
 
 		const prev = () => {
@@ -331,8 +320,8 @@ export default defineComponent({
 		};
 
 		const copy = () => {
-			window.electronAPI.copyText('111');
-		}
+			window.electronAPI.copyText("111");
+		};
 
 		return {
 			formRef,
@@ -350,6 +339,9 @@ export default defineComponent({
 			copy,
 			cameras,
 			lens,
+			dateDisabled(ts: number) {
+				return ts > Date.now();
+			},
 		};
 	},
 });

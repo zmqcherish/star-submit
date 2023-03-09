@@ -19,11 +19,13 @@
     "core-js": "^3.8.3",
     "electron-store": "^8.1.0",
     "imageinfo": "^1.0.4",
+    "nodemailer": "^6.9.1",
     "sharp": "^0.31.3",
     "ts-loader": "~8.2.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0"
+    "vuex": "^4.0.0",
+    "wallpaper": "^6.1.1"
   },
   "devDependencies": {
     "@types/electron-devtools-installer": "^2.2.0",

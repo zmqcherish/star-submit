@@ -2,6 +2,8 @@
 const path = require('path')
 import { app, protocol, BrowserWindow, ipcMain, dialog, nativeTheme, Menu } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
+import { createTransport } from 'nodemailer'
+
 const electronStore = require('electron-store');
 electronStore.initRenderer();
 // import installExtension, { VUEJS3_DEVTOOLS } from 'electron-devtools-installer'
@@ -30,29 +32,6 @@ async function createWindow() {
 	})
 
 	Menu.setApplicationMenu(null);
-	
-	ipcMain.on('set-title', (event, title) => {
-		const webContents = event.sender
-		const w = BrowserWindow.fromWebContents(webContents)
-		w.setTitle(title)
-	})
-
-
-	ipcMain.handle('get-img', async (event) => {
-		let file = dialog.showOpenDialogSync({
-			title: '请选择图片',
-			buttonLabel: '确定',
-			// defaultPath:,
-			properties: ['openFile'],
-			filters: [{
-				name: 'img',
-				extensions: ['jpg', 'png']
-			}],
-		})
-		if(file) {
-			return file[0];
-		}
-	})
 
 	// nativeTheme.themeSource = 'dark';
 
@@ -111,3 +90,51 @@ if (isDevelopment) {
 		})
 	}
 }
+
+ipcMain.handle('send-email', async (event, to) => {
+	const m = electronStore.get('mail');
+	const transporter = createTransport({
+		host: m['host'],
+		port: Number(m['post']),
+		// secure: false,
+		auth: {
+			user: m['email'],
+			pass: m['pwd'],
+		}
+	})
+	const options = {
+		from: m['email'],
+		to: to,
+		text: 'test'
+	}
+
+	try {
+		console.log(111);
+		await transporter.sendMail(options)
+		console.log(333);
+		
+	} catch (err) {
+		console.log(222);
+		console.log(err);
+		
+		event.returnValue = 'fail'
+		return
+	}
+})
+
+
+ipcMain.handle('get-img', async (event) => {
+	let file = dialog.showOpenDialogSync({
+		title: '请选择图片',
+		buttonLabel: '确定',
+		// defaultPath:,
+		properties: ['openFile'],
+		filters: [{
+			name: 'img',
+			extensions: ['jpg', 'png']
+		}],
+	})
+	if (file) {
+		return file[0];
+	}
+})
