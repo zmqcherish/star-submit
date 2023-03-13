@@ -38,30 +38,102 @@ const uuid = () => {
 	return uuid;
 }
 
-const csvaKey = ["title", "name", "desc", "date", "place", "device", "param"];
-const csvaName = [
-	{
-		"title": "作品标题",
-		"name": "猎光者署名",
-		"desc": "猎光者语",
-		"date": "拍摄日期",
-		"place": "拍摄地点",
-		"device": "拍摄设备",
-		"param": "拍摄参数"
+const resMaps = {
+	"csva": {
+		"name": "CSVA",
+		"email": "csvastars@163.com",
+		"keys": ["title", "nick", "desc", "dateStr", "place", "device", "param"],
+		"kvName": {
+			"title": "作品标题",
+			"nick": "猎光者署名",
+			"desc": "猎光者语",
+			"dateStr": "拍摄日期",
+			"place": "拍摄地点",
+			"device": "拍摄设备",
+			"param": "拍摄参数"
+		}
 	},
-]
+	"nc": {
+		"name": "夜空中国",
+		"email": "Steed@Mounstar.com",
+		"keys": ["fileName", "nick", "title", "desc", "dateStr", "place", "param2"],
+		"kvName": {
+			"fileName": "作品文件名",
+			"nick": "署名",
+			"title": "作品标题",
+			"desc": "文字说明",
+			"dateStr": "拍摄日期",
+			"place": "拍摄地点",
+			"param2": "拍摄参数"
+		}
+	},
+	"cs": {
+		"name": "中国国家天文",
+		"email": "cinastronomy@163.com",
+		"keys": ["title", "userName", "desc", "dateStr", "place", "param2"],
+		"kvName": {
+			"title": "作品标题",
+			"userName": "作者名字",
+			"desc": "图片说明",
+			"dateStr": "拍摄日期",
+			"place": "拍摄地点",
+			"param2": "拍摄参数"
+		}
+	}
+}
 
-const getInfoRes = (data) => {
-	console.log(data);
+let attachNameMap = {
+	"csva": "",
+	"nc": "",
+	"cs": ""
+}
+
+let subjectMap = {
+	"csva": "",
+	"nc": "",
+	"cs": ""
+}
+
+
+const getResData = (type, data) => {
+	let typeMap = resMaps[type];
+	let typeData = [];
+	for (const key of typeMap['keys']) {
+		typeData.push(`${typeMap['kvName'][key]}： ${data[key]}`);
+	}
+	return {
+		type,
+		typeName: typeMap['name'],
+		to: typeMap['email'],
+		subject: subjectMap[type],
+		attachName: attachNameMap[type],
+		text: typeData.join('\n')
+	}
+}
+
+const getInfoRes = (data, userInfo) => {
+	// console.log(data);
+	const title = data['title'];
+	data["nick"] = userInfo["nick"];
+	data['userName'] = userInfo["name"];
+
+	data['dateStr'] = formatTime(data['date'])
 	data['device'] = data['camera'] + ' + ' + data['lens'];
 	let other = data['other'] ? `, ${data['other']}` : '';
 	data['param'] = `${data['aperture']}, ${data['shutter']}, iso ${data['iso']}${other}`;
-	let csvaData = [];
-	for (const key of csvaKey) {
-		csvaData.push(`${csvaName[key]}: ${data[key]}`);
-	}
-	console.log(csvaData.join('\n'));
-	return csvaData.join('\n');
+	
+	data['fileName'] = title + "." + data['imgType']
+	data['param2'] = data['device'] + '，' + data['param']
+
+	attachNameMap["csva"] = data["nick"] + "-" + data['fileName'];
+	attachNameMap["nc"] = data['fileName']
+	attachNameMap["cs"] = data['fileName']
+
+	subjectMap["csva"] = data["nick"] + "-" + title;
+	subjectMap["nc"] = "【作品投稿】-" + title;
+	subjectMap["cs"] = subjectMap["nc"];
+
+	return [getResData('csva', data), getResData('nc', data), getResData('cs', data)];
 }
 
 const getRule = (msg='不能为空') => {

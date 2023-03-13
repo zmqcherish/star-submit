@@ -1,6 +1,6 @@
 'use strict'
 const path = require('path')
-import { app, protocol, BrowserWindow, ipcMain, dialog, nativeTheme, Menu } from 'electron'
+import { app, protocol, BrowserWindow, ipcMain, dialog, Menu } from 'electron'
 import { createProtocol } from 'vue-cli-plugin-electron-builder/lib'
 import { createTransport } from 'nodemailer'
 
@@ -21,7 +21,7 @@ async function createWindow() {
 		height: 800,
 		resizable: false,
 		webPreferences: {
-
+			spellcheck: false,	//关闭拼写检查
 			// Use pluginOptions.nodeIntegration, leave this alone
 			// See nklayman.github.io/vue-cli-plugin-electron-builder/guide/security.html#node-integration for more info
 			nodeIntegration: (process.env
@@ -76,6 +76,7 @@ app.on('ready', async () => {
 	createWindow()
 })
 
+
 // Exit cleanly on request from parent process in development mode.
 if (isDevelopment) {
 	if (process.platform === 'win32') {
@@ -91,35 +92,19 @@ if (isDevelopment) {
 	}
 }
 
-ipcMain.handle('send-email', async (event, to) => {
-	const m = electronStore.get('mail');
-	const transporter = createTransport({
-		host: m['host'],
-		port: Number(m['post']),
-		// secure: false,
-		auth: {
-			user: m['email'],
-			pass: m['pwd'],
-		}
-	})
-	const options = {
-		from: m['email'],
-		to: to,
-		text: 'test'
-	}
-
+ipcMain.handle('send-email', async (event, mailConfig, mailData) => {
+	const transporter = createTransport(mailConfig)
 	try {
 		console.log(111);
-		await transporter.sendMail(options)
+		await transporter.sendMail(mailData)
 		console.log(333);
-		
+		return true;
 	} catch (err) {
 		console.log(222);
 		console.log(err);
-		
 		event.returnValue = 'fail'
-		return
 	}
+	return false;
 })
 
 
@@ -138,3 +123,9 @@ ipcMain.handle('get-img', async (event) => {
 		return file[0];
 	}
 })
+
+
+ipcMain.handle('get-tmp-path', async (event) => {
+	return app.getPath('userData');
+})
+

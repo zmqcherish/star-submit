@@ -62,7 +62,7 @@ export default defineComponent({
 	emits: ["del", ],
 	setup(props, ctx) {
 		const del = (row) => {
-			ctx.emit("del", row);
+			ctx.emit("del", row.id);
 		};
 
 		return {

@@ -92,6 +92,7 @@
 						<n-select
 							v-model:value="info.camera"
 							:options="cameras"
+							key-field="id"
 							value-field="label"
 						/>
 					</n-form-item>
@@ -102,6 +103,7 @@
 						<n-select
 							v-model:value="info.lens"
 							:options="lens"
+							key-field="id"
 							value-field="label"
 						/>
 					</n-form-item>
@@ -142,16 +144,31 @@
 					style="width:400px;height:300px"
 				>
 					<n-space vertical>
-						<n-space>
-							这个<n-divider vertical /><n-button
+						<n-space justify="space-between">
+							<n-space>
+								{{ infoRes[index]['typeName'] }}
+								<n-divider vertical />
+								<n-button
+									tertiary
+									round
+									size="small"
+									@click="copy(item.text)"
+								>
+									复制
+								</n-button>
+							</n-space>
+							<n-button
 								tertiary
 								round
+								type="primary"
 								size="small"
-								@click="copy()"
+								@click="previewEmail(item)"
 							>
-								复制</n-button></n-space>
+								预览
+							</n-button>
+						</n-space>
 						<n-input
-							v-model:value="infoRes[index]"
+							v-model:value="infoRes[index]['text']"
 							type="textarea"
 							:autosize="{minRows: 5,maxRows: 10}"
 						/>
@@ -187,6 +204,37 @@
 			</n-space>
 		</n-layout-footer>
 	</n-layout>
+
+	<n-modal
+		v-model:show="emailPreview"
+		preset="dialog"
+		title="邮件预览"
+		positive-text="发送"
+		@positive-click="sendEmail"
+		:mask-closable="false"
+	>
+		<n-space vertical>
+			{{ emailContent.header }}
+			<n-input
+				placeholder="邮件敬语，可为空"
+				v-model:value="emailContent.start"
+			></n-input>
+			<n-input
+				v-model:value="emailContent.text"
+				type="textarea"
+				:autosize="{minRows: 8,maxRows: 10}"
+			/>
+			<n-input
+				placeholder="邮件结语，可为空"
+				v-model:value="emailContent.end"
+			></n-input>
+			<n-space>
+				<img
+					v-if="emailContent.src"
+					:src="emailContent.src"
+				></n-space>
+		</n-space>
+	</n-modal>
 </template>
 
 <script lang="ts">
@@ -214,9 +262,11 @@ import {
 	NGrid,
 	NGi,
 	NDivider,
+	NModal,
 	FormRules,
+	useMessage,
 } from "naive-ui";
-import { getInfoRes, formatTime, getRule } from "@/utils/util";
+import { getInfoRes, getRule } from "@/utils/util";
 
 const formRules: FormRules = {
 	title: getRule("标题不能为空"),
@@ -228,8 +278,8 @@ const formRules: FormRules = {
 		trigger: ["blur", "change"],
 		message: "请选择",
 	},
-	camera: getRule('请选择'),
-	lens: getRule('请选择')
+	camera: getRule("请选择"),
+	lens: getRule("请选择"),
 };
 
 export default defineComponent({
@@ -256,14 +306,24 @@ export default defineComponent({
 		NGrid,
 		NGi,
 		NDivider,
+		NModal,
 	},
 	setup() {
+		const message = useMessage();
 		const currentStep = ref<number>(1);
 		const formRef = ref<FormInst | null>(null);
 		let imgSrc = ref();
 		let imgWidth = ref(600);
-		let imgHeight = ref(0);
-
+		let emailPreview = ref(false);
+		let emailContent = ref({
+			to: "",
+			subject: "",
+			text: "",
+			src: null,
+			header: "",
+			start: "",
+			end: "",
+		});
 		const t1 = window.electronAPI.getData("camera");
 		const t2 = window.electronAPI.getData("lens");
 		let cameras = ref(t1);
@@ -287,40 +347,75 @@ export default defineComponent({
 		const loadImg = async () => {
 			let imgData = await window.electronAPI.getImg();
 			imgSrc.value = imgData;
-
-			// const path = window.electronAPI.getData('wallpaper');
-			// await setWallpaper(path);
 		};
 
 		const next = () => {
 			if (currentStep.value == 1) {
+				const t1 = window.electronAPI.checkDevice();
+				const t2 = window.electronAPI.getData("user");
+				if (!t1) {
+					message.error("请先添加设备");
+					return;
+				}
+
+				if (!t2) {
+					message.error("请先更新个人信息");
+					return;
+				}
+
 				if (!imgSrc.value) {
-					// return;
+					message.error("请先选择图片");
+					return;
 				}
 				currentStep.value++;
 			} else if (currentStep.value == 2) {
-				console.log(toRaw(info.value));
-				console.log(formatTime(toRaw(info.value)["date"]));
-
 				formRef.value?.validate((errors) => {
 					if (!errors) {
-						let t = getInfoRes(toRaw(info.value));
-						infoRes.value.push(t);
+						const userInfo = window.electronAPI.getData("user");
+						const imgInfo = window.electronAPI.getData("imgInfo");
+						let rawData = toRaw(info.value);
+						rawData["imgType"] = imgInfo["info"]["format"];
+						let t = getInfoRes(rawData, userInfo);
+						infoRes.value = t;
 						currentStep.value++;
 					} else {
 						console.log(errors);
 					}
 				});
 			}
-			// if (currentStep.value < 3) currentStep.value++;
 		};
 
 		const prev = () => {
 			if (currentStep.value > 1) currentStep.value--;
 		};
 
-		const copy = () => {
-			window.electronAPI.copyText("111");
+		const copy = (data) => {
+			window.electronAPI.copyText(data);
+			message.success("复制成功");
+		};
+
+		const previewEmail = async (item) => {
+			console.log(123, item);
+			emailPreview.value = true;
+			emailContent.value = Object.assign({}, item);
+			emailContent.value["header"] = "收件人：" + item["to"];
+			const t = await window.electronAPI.getEmailAttach(item['type']);
+			emailContent.value["src"] = t;
+		};
+
+		const sendEmail = () => {
+			const mailData = {
+				to: "zmqcherish@outlook.com",
+				subject: "testt",
+				text: "test",
+				attachments: [
+					{
+						filename: "package.jpg",
+						path: "C:\\Users\\zmqch\\OneDrive\\摄影\\摄影作品\\精选\\2022精选\\DSC06456-edit.jpg",
+					},
+				],
+			};
+			const t2 = window.electronAPI.sendEmail(mailData);
 		};
 
 		return {
@@ -328,17 +423,20 @@ export default defineComponent({
 			formRules,
 			imgSrc,
 			imgWidth,
-			imgHeight,
+			emailPreview,
+			emailContent,
 			currentStatus: ref<StepsProps["status"]>("process"),
 			currentStep,
 			info,
 			infoRes,
+			cameras,
+			lens,
 			next,
 			prev,
 			loadImg,
 			copy,
-			cameras,
-			lens,
+			previewEmail,
+			sendEmail,
 			dateDisabled(ts: number) {
 				return ts > Date.now();
 			},

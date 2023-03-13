@@ -17,28 +17,26 @@
 					:collapsed-width="64"
 					:collapsed-icon-size="22"
 					:options="menuOptions"
-					@update:value="menuChange"
+					v-model:value="menuKey"
 				/>
 			</n-layout-sider>
 			<n-layout
 				v-if="menuKey == 'main'"
 				style="margin: 20px 10px"
 			>
-				<main-view></main-view>
+				<main-view />
 			</n-layout>
 			<n-layout
 				v-if="menuKey == 'device'"
 				style="padding: 30px"
 			>
-				<device-view></device-view>
+				<device-view />
 			</n-layout>
 			<n-layout
 				v-if="menuKey == 'setting'"
 				style="padding: 30px"
 			>
-
 				<setting-view />
-
 			</n-layout>
 		</n-layout>
 	</n-space>
@@ -50,14 +48,12 @@ import DeviceView from "@/views/DeviceView.vue";
 import SettingView from "@/views/SettingView.vue";
 import { h, ref, defineComponent, Component } from "vue";
 import {
-	zhCN,
-	dateZhCN,
-	darkTheme,
 	NIcon,
 	NLayout,
 	NSpace,
 	NLayoutSider,
 	NMenu,
+	useDialog,
 } from "naive-ui";
 import type { MenuOption } from "naive-ui";
 import {
@@ -99,24 +95,32 @@ export default defineComponent({
 		NMenu,
 	},
 	setup() {
+		const dialog = useDialog();
 		let menuKey = ref("main");
 		let collapsed = ref(false);
 
-		const menuChange = (key: string, item: MenuOption) => {
-			if (menuKey.value == "main") {
-				// return;
-			}
-			menuKey.value = key;
-		};
+		const t1 = window.electronAPI.checkDevice();
+		const t2 = window.electronAPI.getData("user");
+		if (!t1 || !t2) {
+			dialog.warning({
+				title: "提示",
+				content: "使用前请先填写个人信息与设备列表",
+				positiveText: "好的",
+				maskClosable: false,
+				onPositiveClick: () => {
+					if (!t2) {
+						menuKey.value = "setting";
+					} else {
+						menuKey.value = "device";
+					}
+				},
+			});
+		}
 
 		return {
 			menuKey,
 			collapsed,
 			menuOptions,
-			menuChange,
-			darkTheme,
-			dateZhCN,
-			zhCN,
 		};
 	},
 });

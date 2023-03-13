@@ -7,7 +7,7 @@
 	>
 		<n-tab-pane
 			name="info"
-			tab="信息"
+			tab="个人信息"
 		>
 			<n-form
 				ref="userFormRef"
@@ -21,7 +21,7 @@
 					v-model:value="userInfo.name"
 				></input-form>
 				<input-form
-					label="昵称"
+					label="署名"
 					path="nick"
 					place-holder="昵称"
 					v-model:value="userInfo.nick"
@@ -78,7 +78,7 @@
 					v-model:value="emailInfo.port"
 				></input-form>
 				<input-form
-					label="用户名"
+					label="发件人"
 					path="email"
 					place-holder="发件邮箱"
 					v-model:value="emailInfo.email"
@@ -182,7 +182,7 @@ export default defineComponent({
 			host: null,
 			port: null,
 			email: null,
-			pwd: null,
+			pwd: null
 		};
 		const t2 = window.electronAPI.getData("user") || {
 			name: null,
@@ -197,7 +197,7 @@ export default defineComponent({
 				if (!errors) {
 					let t = toRaw(emailInfo.value);
 					window.electronAPI.setData("mail", t);
-					message.success("邮箱配置保存成功");
+					message.success("邮箱配置成功");
 				} else {
 					console.log(errors);
 				}

@@ -5,7 +5,9 @@
 		:date-locale="dateZhCN"
 	>
 		<n-message-provider>
-			<router-view />
+			<n-dialog-provider>
+				<router-view />
+			</n-dialog-provider>
 		</n-message-provider>
 	</n-config-provider>
 </template>
@@ -18,12 +20,14 @@ import {
 	darkTheme,
 	NConfigProvider,
 	NMessageProvider,
+	NDialogProvider,
 } from "naive-ui";
 
 export default defineComponent({
 	components: {
 		NConfigProvider,
 		NMessageProvider,
+		NDialogProvider
 	},
 	setup() {
 		return {

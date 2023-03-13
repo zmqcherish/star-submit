@@ -14,8 +14,8 @@
 
 				<table-comp
 					:data="cameras"
-					@del="delItem"
-				></table-comp>
+					@del="delCameraItem"
+				/>
 			</n-space>
 		</n-gi>
 		<n-gi>
@@ -23,7 +23,7 @@
 				<n-space justify="end"><n-button type="success" @click="openAddDialog(2)">
 						新增镜头
 					</n-button></n-space>
-				<table-comp :data="lens"></table-comp>
+				<table-comp :data="lens" @del="delLensItem" />
 			</n-space>
 		</n-gi>
 	</n-grid>
@@ -37,7 +37,7 @@
 import TableComp from "@/components/TableComp.vue";
 import { ref, defineComponent, toRaw } from "vue";
 import { uuid } from "@/utils/util";
-import { NSpace, NButton, NGrid, NGi, NModal,NInput } from "naive-ui";
+import { NSpace, NButton, NGrid, NGi, NModal, NInput } from "naive-ui";
 
 export default defineComponent({
 	components: {
@@ -78,8 +78,14 @@ export default defineComponent({
 			dialogShow.value = false;
 		};
 
-		const delItem = () => {
-			console.log(11);
+		const delCameraItem = (delId) => {
+			cameras.value = cameras.value.filter(item => item.id != delId);
+			window.electronAPI.setData("camera", toRaw(cameras.value));
+		};
+
+		const delLensItem = (delId) => {
+			lens.value = lens.value.filter(item => item.id != delId);
+			window.electronAPI.setData("lens", toRaw(lens.value));
 		};
 
 		return {
@@ -88,7 +94,8 @@ export default defineComponent({
 			addValue,
 			cameras,
 			lens,
-			delItem,
+			delCameraItem,
+			delLensItem,
 			openAddDialog,
 			addDevice
 		};

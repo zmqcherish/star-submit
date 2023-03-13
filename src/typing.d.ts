@@ -3,6 +3,9 @@ export interface IElectronAPI {
 	getData: (k) => Any;
 	setData: (k, v) => void;
 	copyText: (data) => void;
+	sendEmail: (data) => void;
+	getEmailAttach: (type) => string;
+	checkDevice: () => boolean;
 }
 
 declare global {

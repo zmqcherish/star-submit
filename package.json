@@ -24,8 +24,7 @@
     "ts-loader": "~8.2.0",
     "vue": "^3.2.13",
     "vue-router": "^4.0.3",
-    "vuex": "^4.0.0",
-    "wallpaper": "^6.1.1"
+    "vuex": "^4.0.0"
   },
   "devDependencies": {
     "@types/electron-devtools-installer": "^2.2.0",
