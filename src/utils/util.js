@@ -11,7 +11,7 @@ const mailHosts = [
 		'k': 'qq',
 		'name': 'QQ邮箱',
 		'host': 'smtp.qq.com',
-		'port': 456
+		'port': 465
 	},
 	{
 		'k': 'else',
@@ -47,9 +47,9 @@ const resMaps = {
 			"title": "作品标题",
 			"nick": "猎光者署名",
 			"desc": "猎光者语",
-			"dateStr": "拍摄日期",
-			"place": "拍摄地点",
-			"device": "拍摄设备",
+			"dateStr": "拍摄时间",
+			"place": "星空打卡地",
+			"device": "拍摄器材",
 			"param": "拍摄参数"
 		}
 	},
@@ -70,14 +70,15 @@ const resMaps = {
 	"cs": {
 		"name": "中国国家天文",
 		"email": "cinastronomy@163.com",
-		"keys": ["title", "userName", "desc", "dateStr", "place", "param2"],
+		"keys": ["title", "userName", "device", "param", "place", "dateStr", "desc"],
 		"kvName": {
-			"title": "作品标题",
+			"title": "作品名称",
 			"userName": "作者名字",
-			"desc": "图片说明",
-			"dateStr": "拍摄日期",
+			"device": "拍摄器材",
+			"param": "拍摄参数",
 			"place": "拍摄地点",
-			"param2": "拍摄参数"
+			"dateStr": "拍摄日期",
+			"desc": "图片说明"
 		}
 	}
 }

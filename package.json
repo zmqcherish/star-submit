@@ -18,7 +18,6 @@
   "dependencies": {
     "core-js": "^3.8.3",
     "electron-store": "^8.1.0",
-    "imageinfo": "^1.0.4",
     "nodemailer": "^6.9.1",
     "sharp": "^0.31.3",
     "ts-loader": "~8.2.0",

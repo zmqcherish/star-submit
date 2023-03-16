@@ -13,12 +13,14 @@
 				</n-steps>
 			</n-space>
 		</n-layout-header>
-		<n-layout-content style="height: 640px;">
+		<n-layout-content
+			class="my-layout"
+			style="height: 680px;"
+		>
 			<n-space
 				vertical
 				:align="'center'"
 				v-if="currentStep == 1"
-				:style="imgSrc ? '' : 'margin-top: 200px'"
 			>
 				<img
 					v-if="imgSrc"
@@ -40,7 +42,7 @@
 
 			<n-space
 				vertical
-				:align="'center'"
+				align="center"
 				v-if="currentStep == 2"
 			>
 				<n-form
@@ -66,6 +68,7 @@
 							v-model:value="info.desc"
 							placeholder="作品说明"
 							type="textarea"
+							show-count
 							:autosize="{minRows: 3,maxRows: 5}"
 						/>
 					</n-form-item>
@@ -108,28 +111,12 @@
 						/>
 					</n-form-item>
 					<input-form
-						label="光圈"
-						path="aperture"
-						place-holder="光圈，如 F4"
-						v-model:value="info.aperture"
-					></input-form>
-					<input-form
-						label="快门"
-						path="shutter"
-						place-holder="快门，如 1/200s"
-						v-model:value="info.shutter"
-					></input-form>
-					<input-form
-						label="ISO"
-						path="iso"
-						place-holder="ISO，如 100"
-						v-model:value="info.iso"
-					></input-form>
-					<input-form
-						label="其它说明"
-						path="other"
-						place-holder="其它说明(堆栈、合成等)"
-						v-model:value="info.other"
+						v-for="(item, index) in imgMap"
+						:key="index"
+						:label="item.v"
+						:path="item.k"
+						:place-holder="item.tip"
+						v-model:value="info[item.k]"
 					></input-form>
 				</n-form>
 			</n-space>
@@ -141,7 +128,7 @@
 				<n-gi
 					v-for="(item, index) in infoRes"
 					:key="index"
-					style="width:400px;height:300px"
+					style="width:400px;height:280px"
 				>
 					<n-space vertical>
 						<n-space justify="space-between">
@@ -170,7 +157,7 @@
 						<n-input
 							v-model:value="infoRes[index]['text']"
 							type="textarea"
-							:autosize="{minRows: 5,maxRows: 10}"
+							:autosize="{minRows: 5,maxRows: 9}"
 						/>
 					</n-space>
 				</n-gi>
@@ -209,31 +196,42 @@
 		v-model:show="emailPreview"
 		preset="dialog"
 		title="邮件预览"
-		positive-text="发送"
+		:positive-text="emailSending ? '发送中...' : '发送'"
 		@positive-click="sendEmail"
 		:mask-closable="false"
 	>
-		<n-space vertical>
-			{{ emailContent.header }}
-			<n-input
-				placeholder="邮件敬语，可为空"
-				v-model:value="emailContent.start"
-			></n-input>
-			<n-input
-				v-model:value="emailContent.text"
-				type="textarea"
-				:autosize="{minRows: 8,maxRows: 10}"
-			/>
-			<n-input
-				placeholder="邮件结语，可为空"
-				v-model:value="emailContent.end"
-			></n-input>
-			<n-space>
-				<img
+		<n-spin :show="emailSending">
+			<n-space vertical>
+				{{ emailContent.header }}
+				<n-input
+					placeholder="邮件敬语，可为空"
+					v-model:value="emailContent.start"
+				></n-input>
+				<n-input
+					v-model:value="emailContent.text"
+					type="textarea"
+					:autosize="{minRows: 8,maxRows: 10}"
+				/>
+				<n-input
+					placeholder="邮件结语，可为空"
+					v-model:value="emailContent.end"
+				></n-input>
+				<n-space
 					v-if="emailContent.src"
-					:src="emailContent.src"
-				></n-space>
-		</n-space>
+					justify="space-around"
+				>
+					<img :src="emailContent.src['data']">
+					<n-space vertical>
+						<n-text type="success">
+							宽： {{ emailContent.src['width'] }}
+						</n-text>
+						<n-text type="success">
+							高： {{ emailContent.src['height'] }}
+						</n-text>
+					</n-space>
+				</n-space>
+			</n-space>
+		</n-spin>
 	</n-modal>
 </template>
 
@@ -263,6 +261,8 @@ import {
 	NGi,
 	NDivider,
 	NModal,
+	NText,
+	NSpin,
 	FormRules,
 	useMessage,
 } from "naive-ui";
@@ -281,6 +281,13 @@ const formRules: FormRules = {
 	camera: getRule("请选择"),
 	lens: getRule("请选择"),
 };
+
+const imgMap = [
+	{ k: "aperture", v: "光圈", tip: "光圈，如 F2" },
+	{ k: "shutter", v: "快门", tip: "快门，如 20s" },
+	{ k: "iso", v: "ISO", tip: "ISO，如 3200" },
+	{ k: "other", v: "其它", tip: "其它说明(堆栈、合成等)" },
+];
 
 export default defineComponent({
 	components: {
@@ -307,15 +314,18 @@ export default defineComponent({
 		NGi,
 		NDivider,
 		NModal,
+		NText,
+		NSpin,
 	},
 	setup() {
 		const message = useMessage();
 		const currentStep = ref<number>(1);
 		const formRef = ref<FormInst | null>(null);
 		let imgSrc = ref();
-		let imgWidth = ref(600);
+		let emailSending = ref(false);
 		let emailPreview = ref(false);
 		let emailContent = ref({
+			type: "",
 			to: "",
 			subject: "",
 			text: "",
@@ -324,6 +334,7 @@ export default defineComponent({
 			start: "",
 			end: "",
 		});
+		const elseSetting = window.electronAPI.getData("elseInfo") || {};
 		const t1 = window.electronAPI.getData("camera");
 		const t2 = window.electronAPI.getData("lens");
 		let cameras = ref(t1);
@@ -374,7 +385,7 @@ export default defineComponent({
 						const userInfo = window.electronAPI.getData("user");
 						const imgInfo = window.electronAPI.getData("imgInfo");
 						let rawData = toRaw(info.value);
-						rawData["imgType"] = imgInfo["info"]["format"];
+						rawData["imgType"] = imgInfo["format"];
 						let t = getInfoRes(rawData, userInfo);
 						infoRes.value = t;
 						currentStep.value++;
@@ -395,34 +406,57 @@ export default defineComponent({
 		};
 
 		const previewEmail = async (item) => {
-			console.log(123, item);
+			const type = item["type"];
 			emailPreview.value = true;
 			emailContent.value = Object.assign({}, item);
 			emailContent.value["header"] = "收件人：" + item["to"];
-			const t = await window.electronAPI.getEmailAttach(item['type']);
-			emailContent.value["src"] = t;
+			const emailAttachInfo = await window.electronAPI.getEmailAttach(type);
+			emailContent.value["src"] = emailAttachInfo;
+
+			emailContent.value["start"] = elseSetting[type + "start"] || "";
+			emailContent.value["end"] = elseSetting[type + "end"] || "";
 		};
 
 		const sendEmail = () => {
+			if(emailSending.value) {
+				console.log('is sending');
+				return false;
+			}
+			emailSending.value = true;
+			let val = emailContent.value;
+			let text = val["text"];
+			if(val["start"]) {
+				text = val["start"] + '\n' + text;
+				elseSetting[val.type + "start"] = val["start"];
+			}
+			if(val["end"]) {
+				text = text + '\n' + val["end"];
+				elseSetting[val.type + "end"] = val["end"];
+			}
+			window.electronAPI.setData("elseInfo", elseSetting);
+
 			const mailData = {
-				to: "zmqcherish@outlook.com",
-				subject: "testt",
-				text: "test",
+				to: val["to"],
+				subject: val["subject"],
+				text,
 				attachments: [
 					{
-						filename: "package.jpg",
-						path: "C:\\Users\\zmqch\\OneDrive\\摄影\\摄影作品\\精选\\2022精选\\DSC06456-edit.jpg",
+						filename: val["attachName"],
+						path: val["src"]["path"],
 					},
-				],
+				]
 			};
+
 			const t2 = window.electronAPI.sendEmail(mailData);
+			emailSending.value = false;
+			return false;
 		};
 
 		return {
 			formRef,
 			formRules,
 			imgSrc,
-			imgWidth,
+			emailSending,
 			emailPreview,
 			emailContent,
 			currentStatus: ref<StepsProps["status"]>("process"),
@@ -431,6 +465,7 @@ export default defineComponent({
 			infoRes,
 			cameras,
 			lens,
+			imgMap,
 			next,
 			prev,
 			loadImg,
@@ -451,5 +486,19 @@ export default defineComponent({
 .n-layout-footer {
 	background: rgba(16, 16, 20, 0.82);
 	padding: 24px;
+}
+</style>
+
+<style>
+.my-layout .n-layout-scroll-container {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.n-layout-scroll-container .my-a {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 </style>

@@ -2,7 +2,7 @@
 	<n-space vertical>
 		<n-layout
 			has-sider
-			style="height: 760px;"
+			style="height: 820px;"
 			bordered
 		>
 			<n-layout-sider

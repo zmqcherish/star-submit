@@ -18,7 +18,7 @@ async function createWindow() {
 	// Create the browser window.
 	const win = new BrowserWindow({
 		width: 1200,
-		height: 800,
+		height: 850,
 		resizable: false,
 		webPreferences: {
 			spellcheck: false,	//关闭拼写检查
@@ -95,7 +95,7 @@ if (isDevelopment) {
 ipcMain.handle('send-email', async (event, mailConfig, mailData) => {
 	const transporter = createTransport(mailConfig)
 	try {
-		console.log(111);
+		// console.log(111, mailData);
 		await transporter.sendMail(mailData)
 		console.log(333);
 		return true;

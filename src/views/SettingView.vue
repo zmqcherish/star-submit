@@ -14,23 +14,11 @@
 				:model="userInfo"
 				:rules="userFormRules"
 			>
-				<input-form
-					label="姓名"
-					path="name"
-					place-holder="姓名"
-					v-model:value="userInfo.name"
-				></input-form>
-				<input-form
-					label="署名"
-					path="nick"
-					place-holder="昵称"
-					v-model:value="userInfo.nick"
-				></input-form>
-				<input-form
-					label="手机号"
-					path="phone"
-					place-holder="手机号"
-					v-model:value="userInfo.phone"
+				<input-form v-for="(item, index) in userMap" :key="index"
+					:label="item.v"
+					:path="item.k"
+					:place-holder="item.tip"
+					v-model:value="userInfo[item.k]"
 				></input-form>
 			</n-form>
 			<n-button
@@ -65,29 +53,11 @@
 					/>
 				</n-form-item>
 
-				<input-form
-					label="服务器"
-					path="host"
-					place-holder="邮箱服务器"
-					v-model:value="emailInfo.host"
-				></input-form>
-				<input-form
-					label="端口号"
-					path="port"
-					place-holder="端口号"
-					v-model:value="emailInfo.port"
-				></input-form>
-				<input-form
-					label="发件人"
-					path="email"
-					place-holder="发件邮箱"
-					v-model:value="emailInfo.email"
-				></input-form>
-				<input-form
-					label="密码"
-					path="pwd"
-					place-holder="授权码，不是登录密码"
-					v-model:value="emailInfo.pwd"
+				<input-form v-for="(item, index) in mailMap" :key="index"
+					:label="item.v"
+					:path="item.k"
+					:place-holder="item.tip"
+					v-model:value="emailInfo[item.k]"
 				></input-form>
 			</n-form>
 			<n-button
@@ -96,6 +66,31 @@
 				secondary
 				strong
 				@click="saveMail"
+			>
+				保存
+			</n-button>
+		</n-tab-pane>
+
+		<n-tab-pane
+			name="else"
+			tab="其它"
+		>
+			<n-form
+				ref="elseFormRef"
+				:model="elseInfo"
+			>
+				<input-form v-for="(item, index) in elseMap" :key="index"
+					:label="item.v"
+					:place-holder="item.v"
+					v-model:value="elseInfo[item.k]"
+				></input-form>
+			</n-form>
+			<n-button
+				type="primary"
+				block
+				secondary
+				strong
+				@click="saveElse"
 			>
 				保存
 			</n-button>
@@ -161,6 +156,26 @@ const userFormRules: FormRules = {
 	],
 };
 
+const elseMap = [
+	{ k: "csvastart", v: "CSVA邮件敬语" },
+	{ k: "csvaend", v: "CSVA邮件结语" },
+	{ k: "ncstart", v: "夜空中国邮件敬语" },
+	{ k: "ncend", v: "夜空中国邮件结语" },
+]
+
+const mailMap = [
+	{ k: "host", v: "服务器", tip: "服务器" },
+	{ k: "port", v: "端口号", tip: "端口号" },
+	{ k: "email", v: "发件人", tip: "发件邮箱" },
+	{ k: "pwd", v: "密码", tip: "授权码，不是登录密码" },
+]
+
+const userMap = [
+	{ k: "name", v: "姓名", tip: "姓名" },
+	{ k: "nick", v: "署名", tip: "昵称" },
+	{ k: "phone", v: "手机号", tip: "手机号" },
+]
+
 export default defineComponent({
 	components: {
 		InputForm,
@@ -189,8 +204,15 @@ export default defineComponent({
 			nick: null,
 			phone: null,
 		};
+		const t3 = window.electronAPI.getData("elseInfo") || {
+			csvastart: null,
+			csvaend: null,
+			ncstart: null,
+			ncend: null,
+		};
 		let emailInfo = ref(t1);
 		let userInfo = ref(t2);
+		let elseInfo = ref(t3);
 
 		const saveMail = () => {
 			mailFormRef.value?.validate((errors) => {
@@ -217,6 +239,12 @@ export default defineComponent({
 			});
 		};
 
+		const saveElse = () => {
+			let t = toRaw(elseInfo.value);
+			window.electronAPI.setData("elseInfo", t);
+			message.success("保存成功");
+		};
+
 		const hostChange = (value: string, opt: SelectOption) => {
 			emailInfo.value["host"] = opt["host"];
 			emailInfo.value["port"] = opt["port"];
@@ -230,8 +258,11 @@ export default defineComponent({
 			userFormRules,
 			userInfo,
 			emailInfo,
+			elseInfo,
+			elseMap,mailMap,userMap,
 			saveMail,
 			saveUser,
+			saveElse,
 			hostChange,
 		};
 	},
