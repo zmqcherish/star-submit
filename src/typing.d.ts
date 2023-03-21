@@ -3,7 +3,7 @@ export interface IElectronAPI {
 	getData: (k) => Any;
 	setData: (k, v) => void;
 	copyText: (data) => void;
-	sendEmail: (data) => void;
+	sendEmail: (data) => object;
 	getEmailAttach: (type) => string;
 	checkDevice: () => boolean;
 }

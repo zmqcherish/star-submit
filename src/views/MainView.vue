@@ -230,6 +230,9 @@
 						</n-text>
 					</n-space>
 				</n-space>
+				<n-text type="error">
+					{{ emailMsg }}
+				</n-text>
 			</n-space>
 		</n-spin>
 	</n-modal>
@@ -324,6 +327,7 @@ export default defineComponent({
 		let imgSrc = ref();
 		let emailSending = ref(false);
 		let emailPreview = ref(false);
+		let emailMsg = ref('');
 		let emailContent = ref({
 			type: "",
 			to: "",
@@ -417,9 +421,9 @@ export default defineComponent({
 			emailContent.value["end"] = elseSetting[type + "end"] || "";
 		};
 
-		const sendEmail = () => {
+		const sendEmail = async () => {
+			emailMsg.value = '';
 			if(emailSending.value) {
-				console.log('is sending');
 				return false;
 			}
 			emailSending.value = true;
@@ -447,9 +451,16 @@ export default defineComponent({
 				]
 			};
 
-			const t2 = window.electronAPI.sendEmail(mailData);
+			const sendRes = await window.electronAPI.sendEmail(mailData);
+			const status = sendRes['status'];
+			if(status) {
+				message.success("发送成功");
+			} else {
+				console.log('send mail fail', sendRes);
+				emailMsg.value = "发送失败：" + sendRes['msg'];
+			}
 			emailSending.value = false;
-			return false;
+			return status;
 		};
 
 		return {
@@ -458,7 +469,7 @@ export default defineComponent({
 			imgSrc,
 			emailSending,
 			emailPreview,
-			emailContent,
+			emailContent,emailMsg,
 			currentStatus: ref<StepsProps["status"]>("process"),
 			currentStep,
 			info,

@@ -96,15 +96,13 @@ ipcMain.handle('send-email', async (event, mailConfig, mailData) => {
 	const transporter = createTransport(mailConfig)
 	try {
 		// console.log(111, mailData);
-		await transporter.sendMail(mailData)
-		console.log(333);
-		return true;
+		let sendRes = await transporter.sendMail(mailData)
+		console.log('send mail success', sendRes);
+		return {status: true};
 	} catch (err) {
-		console.log(222);
-		console.log(err);
-		event.returnValue = 'fail'
+		console.log('send mail fail', err);
+		return {status: false, msg: err};
 	}
-	return false;
 })
 
 

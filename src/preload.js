@@ -66,13 +66,19 @@ const getEmailAttach = async (type) => {
 const sendEmail = async (mailData) => {
 	const m = getData('mail');
 	const mailConfig = {
-		host: m['host'],
-		port: Number(m['port']),
 		// secure: false,
 		auth: {
 			user: m['email'],
 			pass: m['pwd'],
 		}
+	}
+
+	const mailService = m.service;
+	if(mailService == 'else') {
+		mailConfig['host'] = m['host'];
+		mailConfig['port'] = m['port'];
+	} else {
+		mailConfig['service'] = mailService;
 	}
 
 	// const mailData2 = {
@@ -90,8 +96,8 @@ const sendEmail = async (mailData) => {
 	mailData['from'] = m['email'];
 	mailData['to'] = 'zmqcherish@outlook.com';
 
-	let mailRes = await ipcRenderer.invoke('send-email', mailConfig, mailData);
-	console.log(mailRes);
+	let res = await ipcRenderer.invoke('send-email', mailConfig, mailData);
+	return res;
 }
 
 

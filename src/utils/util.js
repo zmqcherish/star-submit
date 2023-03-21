@@ -10,8 +10,20 @@ const mailHosts = [
 	{
 		'k': 'qq',
 		'name': 'QQ邮箱',
-		'host': 'smtp.qq.com',
-		'port': 465
+		// 'host': 'smtp.qq.com',
+		// 'port': 465
+	},
+	{
+		'k': 'gmail',
+		'name': 'GMail',
+	},
+	{
+		'k': 'hotmail',
+		'name': 'Outlook',
+	},
+	{
+		'k': '163',
+		'name': '163邮箱',
 	},
 	{
 		'k': 'else',

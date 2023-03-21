@@ -42,10 +42,10 @@
 			>
 				<n-form-item
 					label="邮箱服务"
-					path="hostKey"
+					path="service"
 				>
 					<n-select
-						v-model:value="emailInfo.hostKey"
+						v-model:value="emailInfo.service"
 						:options="mailHosts"
 						label-field="name"
 						value-field="k"
@@ -53,6 +53,14 @@
 					/>
 				</n-form-item>
 
+				<div v-if="emailInfo.service == 'else'">
+					<input-form v-for="(item, index) in mailMap1" :key="index"
+					:label="item.v"
+					:path="item.k"
+					:place-holder="item.tip"
+					v-model:value="emailInfo[item.k]"
+				></input-form>
+				</div>
 				<input-form v-for="(item, index) in mailMap" :key="index"
 					:label="item.v"
 					:path="item.k"
@@ -117,7 +125,7 @@ import {
 import { mailHosts, getRule } from "@/utils/util";
 
 const mailFormRules: FormRules = {
-	hostKey: getRule("请选择"),
+	service: getRule("请选择"),
 	host: getRule(),
 	port: getRule(),
 	email: {
@@ -161,11 +169,16 @@ const elseMap = [
 	{ k: "csvaend", v: "CSVA邮件结语" },
 	{ k: "ncstart", v: "夜空中国邮件敬语" },
 	{ k: "ncend", v: "夜空中国邮件结语" },
+	{ k: "csstart", v: "国家天文邮件敬语" },
+	{ k: "csend", v: "国家天文邮件结语" },
+]
+
+const mailMap1 = [
+	{ k: "host", v: "服务器", tip: "服务器" },
+	{ k: "port", v: "端口号", tip: "端口号" },
 ]
 
 const mailMap = [
-	{ k: "host", v: "服务器", tip: "服务器" },
-	{ k: "port", v: "端口号", tip: "端口号" },
 	{ k: "email", v: "发件人", tip: "发件邮箱" },
 	{ k: "pwd", v: "密码", tip: "授权码，不是登录密码" },
 ]
@@ -193,7 +206,7 @@ export default defineComponent({
 		const mailFormRef = ref<FormInst | null>(null);
 
 		const t1 = window.electronAPI.getData("mail") || {
-			hostKey: null,
+			service: null,
 			host: null,
 			port: null,
 			email: null,
@@ -259,7 +272,7 @@ export default defineComponent({
 			userInfo,
 			emailInfo,
 			elseInfo,
-			elseMap,mailMap,userMap,
+			elseMap,mailMap,mailMap1,userMap,
 			saveMail,
 			saveUser,
 			saveElse,
