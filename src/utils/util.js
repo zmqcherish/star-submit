@@ -143,7 +143,7 @@ const getInfoRes = (data, userInfo) => {
 	attachNameMap["cs"] = data['fileName']
 
 	subjectMap["csva"] = data["nick"] + "-" + title;
-	subjectMap["nc"] = "【作品投稿】-" + title;
+	subjectMap["nc"] = "【作品投稿】- " + title;
 	subjectMap["cs"] = subjectMap["nc"];
 
 	return [getResData('csva', data), getResData('nc', data), getResData('cs', data)];

@@ -31,6 +31,7 @@ const getImg = async () => {
 const sizeType = {
 	'csva': 1080, 'nc':2000
 }
+
 const getEmailAttach = async (type) => {
 	const tempPath = await ipcRenderer.invoke('get-tmp-path');
 	const imgOutPath = path.join(tempPath, `${type}.jpg`)
@@ -52,6 +53,23 @@ const getEmailAttach = async (type) => {
 		const t = await sharp(imgOutPath).resize(newShowSize[0], newShowSize[1]).toBuffer();
 		const imgShowData = "data:image/jpg;base64," + t.toString('base64');
 
+		let imgSize = resDataInfo['size'] / 1024;
+		let imgSizeContent = '';
+		let overSize = '';
+		if(imgSize < 1024) {
+			imgSizeContent = parseInt(imgSize) + ' KB';
+		} else {
+			imgSize = imgSize / 1024;
+			imgSizeContent = Math.ceil(imgSize * 10) / 10 + ' MB';
+			if(type == 'nc' && imgSize > 1) {
+				overSize = '（限制1M，建议先压缩）';
+			}
+			if(type == 'cs' && imgSize > 10) {
+				overSize = '（限制10M，建议先压缩）';
+			}
+		}
+		resDataInfo['overSize'] = overSize;
+		resDataInfo['sizeContent'] = imgSizeContent;
 		resDataInfo['path'] = imgOutPath;
 		resDataInfo['data'] = imgShowData;
 		console.log(11, resDataInfo);
@@ -94,7 +112,7 @@ const sendEmail = async (mailData) => {
 	// 	]
 	// }
 	mailData['from'] = m['email'];
-	mailData['to'] = 'zmqcherish@outlook.com';
+	mailData['to'] = 'zmqhebetien19830330@gmail.com';
 
 	let res = await ipcRenderer.invoke('send-email', mailConfig, mailData);
 	return res;
@@ -122,11 +140,21 @@ const getNewSize = (imgInfo, maxWidth=800, maxHeight=560, scale=null) => {
 	const oldHeight = imgInfo.height;
 	let newWidth, newHeight;
 	if(oldWidth > oldHeight) {
-		newWidth = scale ? parseInt(oldWidth * scale) : maxWidth;
-		newHeight = parseInt(newWidth * oldHeight / oldWidth);
+		if(oldWidth > maxWidth) {
+			newWidth = scale ? parseInt(oldWidth * scale) : maxWidth;
+			newHeight = parseInt(newWidth * oldHeight / oldWidth);
+		} else {
+			newWidth = oldWidth;
+			newHeight = oldHeight;
+		}
 	} else {
-		newHeight = scale ? parseInt(oldHeight * scale) : maxHeight;
-		newWidth = parseInt(newHeight * oldWidth / oldHeight);
+		if(oldHeight > maxHeight) {
+			newHeight = scale ? parseInt(oldHeight * scale) : maxHeight;
+			newWidth = parseInt(newHeight * oldWidth / oldHeight);
+		} else {
+			newHeight = oldHeight;
+			newWidth = oldWidth;
+		}
 	}
 	return [newWidth, newHeight];
 }

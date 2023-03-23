@@ -38,6 +38,12 @@
 			>
 				<setting-view />
 			</n-layout>
+			<n-layout
+				v-if="menuKey == 'about'"
+				style="padding: 50px"
+			>
+				<about-view />
+			</n-layout>
 		</n-layout>
 	</n-space>
 </template>
@@ -46,6 +52,7 @@
 import MainView from "@/views/MainView.vue";
 import DeviceView from "@/views/DeviceView.vue";
 import SettingView from "@/views/SettingView.vue";
+import AboutView from "@/views/AboutView.vue";
 import { h, ref, defineComponent, Component } from "vue";
 import {
 	NIcon,
@@ -58,8 +65,9 @@ import {
 import type { MenuOption } from "naive-ui";
 import {
 	BookmarkOutline,
-	CaretDownOutline,
-	BookOutline,
+	CameraOutline,
+	SettingsOutline,
+	AlertCircleOutline
 } from "@vicons/ionicons5";
 
 const menuOptions: MenuOption[] = [
@@ -71,12 +79,17 @@ const menuOptions: MenuOption[] = [
 	{
 		label: "我的设备",
 		key: "device",
-		icon: renderIcon(CaretDownOutline),
+		icon: renderIcon(CameraOutline),
 	},
 	{
 		label: "设置",
 		key: "setting",
-		icon: renderIcon(BookOutline),
+		icon: renderIcon(SettingsOutline),
+	},
+	{
+		label: "关于",
+		key: "about",
+		icon: renderIcon(AlertCircleOutline),
 	},
 ];
 
@@ -89,6 +102,7 @@ export default defineComponent({
 		SettingView,
 		MainView,
 		DeviceView,
+		AboutView,
 		NLayout,
 		NSpace,
 		NLayoutSider,

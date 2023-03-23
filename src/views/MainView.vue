@@ -216,17 +216,20 @@
 					placeholder="邮件结语，可为空"
 					v-model:value="emailContent.end"
 				></n-input>
-				<n-space
+				<n-space vertical
 					v-if="emailContent.src"
-					justify="space-around"
+					align="center"
 				>
 					<img :src="emailContent.src['data']">
-					<n-space vertical>
+					<n-space v-if="emailContent.src">
 						<n-text type="success">
 							宽： {{ emailContent.src['width'] }}
 						</n-text>
 						<n-text type="success">
 							高： {{ emailContent.src['height'] }}
+						</n-text>
+						<n-text :type="emailContent.src['overSize'] ? 'error' : 'success'">
+							大小： {{ emailContent.src['sizeContent'] }} {{ emailContent.src['overSize'] }}
 						</n-text>
 					</n-space>
 				</n-space>
@@ -327,7 +330,7 @@ export default defineComponent({
 		let imgSrc = ref();
 		let emailSending = ref(false);
 		let emailPreview = ref(false);
-		let emailMsg = ref('');
+		let emailMsg = ref("");
 		let emailContent = ref({
 			type: "",
 			to: "",
@@ -422,19 +425,23 @@ export default defineComponent({
 		};
 
 		const sendEmail = async () => {
-			emailMsg.value = '';
-			if(emailSending.value) {
+			if(!emailContent.value["src"]) {
+				message.warning("请等待图片加载完成");
+				return false;
+			}
+			emailMsg.value = "";
+			if (emailSending.value) {
 				return false;
 			}
 			emailSending.value = true;
 			let val = emailContent.value;
 			let text = val["text"];
-			if(val["start"]) {
-				text = val["start"] + '\n' + text;
+			if (val["start"]) {
+				text = val["start"] + "\n" + text;
 				elseSetting[val.type + "start"] = val["start"];
 			}
-			if(val["end"]) {
-				text = text + '\n' + val["end"];
+			if (val["end"]) {
+				text = text + "\n\n" + val["end"];
 				elseSetting[val.type + "end"] = val["end"];
 			}
 			window.electronAPI.setData("elseInfo", elseSetting);
@@ -448,16 +455,16 @@ export default defineComponent({
 						filename: val["attachName"],
 						path: val["src"]["path"],
 					},
-				]
+				],
 			};
-
+			// return false;
 			const sendRes = await window.electronAPI.sendEmail(mailData);
-			const status = sendRes['status'];
-			if(status) {
+			const status = sendRes["status"];
+			if (status) {
 				message.success("发送成功");
 			} else {
-				console.log('send mail fail', sendRes);
-				emailMsg.value = "发送失败：" + sendRes['msg'];
+				console.log("send mail fail", sendRes);
+				emailMsg.value = "发送失败：" + sendRes["msg"];
 			}
 			emailSending.value = false;
 			return status;
@@ -469,7 +476,8 @@ export default defineComponent({
 			imgSrc,
 			emailSending,
 			emailPreview,
-			emailContent,emailMsg,
+			emailContent,
+			emailMsg,
 			currentStatus: ref<StepsProps["status"]>("process"),
 			currentStep,
 			info,
