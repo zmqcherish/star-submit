@@ -1,51 +1,50 @@
 <template>
-	<n-space vertical>
-		<n-layout
-			has-sider
-			style="height: 820px;"
+	<n-layout
+		has-sider
+		style="height: 840px;"
+		position="absolute"
+		bordered
+	>
+		<n-layout-sider
 			bordered
+			collapse-mode="width"
+			:collapsed-width="64"
+			:width="240"
+			:collapsed="collapsed"
 		>
-			<n-layout-sider
-				bordered
-				collapse-mode="width"
-				:collapsed-width="64"
-				:width="240"
+			<n-menu
 				:collapsed="collapsed"
-			>
-				<n-menu
-					:collapsed="collapsed"
-					:collapsed-width="64"
-					:collapsed-icon-size="22"
-					:options="menuOptions"
-					v-model:value="menuKey"
-				/>
-			</n-layout-sider>
-			<n-layout
-				v-if="menuKey == 'main'"
-				style="margin: 20px 10px"
-			>
-				<main-view />
-			</n-layout>
-			<n-layout
-				v-if="menuKey == 'device'"
-				style="padding: 30px"
-			>
-				<device-view />
-			</n-layout>
-			<n-layout
-				v-if="menuKey == 'setting'"
-				style="padding: 30px"
-			>
-				<setting-view />
-			</n-layout>
-			<n-layout
-				v-if="menuKey == 'about'"
-				style="padding: 50px"
-			>
-				<about-view />
-			</n-layout>
+				:collapsed-width="64"
+				:collapsed-icon-size="22"
+				:options="menuOptions"
+				v-model:value="menuKey"
+			/>
+		</n-layout-sider>
+		<n-layout
+			v-if="menuKey == 'main'"
+			style="margin: 20px 10px"
+		>
+			<main-view />
 		</n-layout>
-	</n-space>
+		<n-layout
+			v-if="menuKey == 'device'"
+			style="padding: 30px"
+		>
+			<device-view />
+		</n-layout>
+		<n-layout
+			v-if="menuKey == 'setting'"
+			style="padding: 30px"
+		>
+			<setting-view />
+		</n-layout>
+		<n-layout
+			v-if="menuKey == 'about'"
+			style="padding: 50px"
+		>
+			<about-view />
+		</n-layout>
+	</n-layout>
 </template>
 
 <script lang="ts">
@@ -57,7 +56,6 @@ import { h, ref, defineComponent, Component } from "vue";
 import {
 	NIcon,
 	NLayout,
-	NSpace,
 	NLayoutSider,
 	NMenu,
 	useDialog,
@@ -104,7 +102,6 @@ export default defineComponent({
 		DeviceView,
 		AboutView,
 		NLayout,
-		NSpace,
 		NLayoutSider,
 		NMenu,
 	},

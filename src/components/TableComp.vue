@@ -23,8 +23,12 @@ import type { DataTableColumns } from "naive-ui";
 const createColumns = ({opt}: {opt: (row) => void;}): DataTableColumns<any> => {
 	return [
 		{
-			title: "名称",
+			title: "设备名称",
 			key: "label",
+		},
+		{
+			title: "设备类型",
+			key: "typeName",
 		},
 		{
 			title: "",

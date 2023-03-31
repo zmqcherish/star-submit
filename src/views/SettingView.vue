@@ -14,7 +14,9 @@
 				:model="userInfo"
 				:rules="userFormRules"
 			>
-				<input-form v-for="(item, index) in userMap" :key="index"
+				<input-form
+					v-for="(item, index) in userMap"
+					:key="index"
 					:label="item.v"
 					:path="item.k"
 					:place-holder="item.tip"
@@ -54,19 +56,34 @@
 				</n-form-item>
 
 				<div v-if="emailInfo.service == 'else'">
-					<input-form v-for="(item, index) in mailMap1" :key="index"
-					:label="item.v"
-					:path="item.k"
-					:place-holder="item.tip"
-					v-model:value="emailInfo[item.k]"
-				></input-form>
+					<input-form
+						v-for="(item, index) in mailMap1"
+						:key="index"
+						:label="item.v"
+						:path="item.k"
+						:place-holder="item.tip"
+						v-model:value="emailInfo[item.k]"
+					></input-form>
 				</div>
-				<input-form v-for="(item, index) in mailMap" :key="index"
+				<input-form
+					v-for="(item, index) in mailMap"
+					:key="index"
 					:label="item.v"
 					:path="item.k"
 					:place-holder="item.tip"
 					v-model:value="emailInfo[item.k]"
 				></input-form>
+				<n-form-item
+					label="密码"
+					path="pwd"
+				>
+					<n-input
+						v-model:value="emailInfo['pwd']"
+						type="password"
+						show-password-on="mousedown"
+						placeholder="根据邮箱类型填写授权码或密码"
+					/>
+				</n-form-item>
 			</n-form>
 			<n-button
 				type="primary"
@@ -87,9 +104,10 @@
 				ref="elseFormRef"
 				:model="elseInfo"
 			>
-				<input-form v-for="(item, index) in elseMap" :key="index"
+				<input-form
+					v-for="(item, index) in elseMap"
+					:key="index"
 					:label="item.v"
-					:place-holder="item.v"
 					v-model:value="elseInfo[item.k]"
 				></input-form>
 			</n-form>
@@ -120,6 +138,7 @@ import {
 	FormRules,
 	NTabs,
 	NTabPane,
+	NInput,
 	SelectOption,
 } from "naive-ui";
 import { mailHosts, getRule } from "@/utils/util";
@@ -129,18 +148,18 @@ const mailFormRules: FormRules = {
 	host: getRule(),
 	port: getRule(),
 	email: {
-			required: true,
-			validator(rule: FormItemRule, value: string) {
-				if (!value) {
-					return new Error("不能为空");
-				}
-				if (value.indexOf('@') == -1) {
-					return new Error("格式错误");
-				}
-				return true;
-			},
-			trigger: ["blur"],
+		required: true,
+		validator(rule: FormItemRule, value: string) {
+			if (!value) {
+				return new Error("不能为空");
+			}
+			if (value.indexOf("@") == -1) {
+				return new Error("格式错误");
+			}
+			return true;
 		},
+		trigger: ["blur"],
+	},
 	pwd: getRule(),
 };
 
@@ -171,23 +190,20 @@ const elseMap = [
 	{ k: "ncend", v: "夜空中国邮件结语" },
 	{ k: "csstart", v: "国家天文邮件敬语" },
 	{ k: "csend", v: "国家天文邮件结语" },
-]
+];
 
 const mailMap1 = [
 	{ k: "host", v: "服务器", tip: "服务器" },
 	{ k: "port", v: "端口号", tip: "端口号" },
-]
+];
 
-const mailMap = [
-	{ k: "email", v: "发件人", tip: "发件邮箱" },
-	{ k: "pwd", v: "密码", tip: "授权码，不是登录密码" },
-]
+const mailMap = [{ k: "email", v: "发件人", tip: "发件邮箱" }];
 
 const userMap = [
 	{ k: "name", v: "姓名", tip: "姓名" },
 	{ k: "nick", v: "署名", tip: "昵称" },
 	{ k: "phone", v: "手机号", tip: "手机号" },
-]
+];
 
 export default defineComponent({
 	components: {
@@ -198,6 +214,7 @@ export default defineComponent({
 		NFormItem,
 		NTabs,
 		NTabPane,
+		NInput,
 	},
 	setup() {
 		const message = useMessage();
@@ -210,7 +227,7 @@ export default defineComponent({
 			host: null,
 			port: null,
 			email: null,
-			pwd: null
+			pwd: null,
 		};
 		const t2 = window.electronAPI.getData("user") || {
 			name: null,
@@ -272,7 +289,10 @@ export default defineComponent({
 			userInfo,
 			emailInfo,
 			elseInfo,
-			elseMap,mailMap,mailMap1,userMap,
+			elseMap,
+			mailMap,
+			mailMap1,
+			userMap,
 			saveMail,
 			saveUser,
 			saveElse,

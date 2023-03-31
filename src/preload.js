@@ -15,7 +15,7 @@ const getImg = async () => {
 	const imgInfo = {
 		width: imgInfoRaw.width,
 		height: imgInfoRaw.height,
-		format: imgInfoRaw.format,
+		format: 'jpg',//imgInfoRaw.format,
 		path: imgPath
 	}
 	// console.log('info', imgInfo);
@@ -34,8 +34,8 @@ const sizeType = {
 
 const getEmailAttach = async (type) => {
 	const tempPath = await ipcRenderer.invoke('get-tmp-path');
-	const imgOutPath = path.join(tempPath, `${type}.jpg`)
 	const imgRawInfo = getData('imgInfo');
+	const imgOutPath = path.join(tempPath, `${type}.${imgRawInfo['format']}`)
 	const imgRawPath = imgRawInfo['path'];
 	try {
 		let newSize;
@@ -160,9 +160,8 @@ const getNewSize = (imgInfo, maxWidth=800, maxHeight=560, scale=null) => {
 }
 
 const checkDevice = () => {
-	const t1 = getData("camera");
-	const t2 = getData("lens");
-	return t1 && t2 && t1.length > 0 && t2.length > 0;
+	const t1 = getData("devices");
+	return t1 && t1.length > 0;
 }
 
 contextBridge.exposeInMainWorld('electronAPI', {

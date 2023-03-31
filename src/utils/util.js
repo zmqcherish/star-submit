@@ -132,6 +132,10 @@ const getInfoRes = (data, userInfo) => {
 
 	data['dateStr'] = formatTime(data['date'])
 	data['device'] = data['camera'] + ' + ' + data['lens'];
+	const otherDevice = data['otherDevice'] || [];
+	if(otherDevice) {
+		data['device'] = data['device'] + ' + ' + otherDevice.join(' + ')
+	}
 	let other = data['other'] ? `, ${data['other']}` : '';
 	data['param'] = `${data['aperture']}, ${data['shutter']}, iso ${data['iso']}${other}`;
 	

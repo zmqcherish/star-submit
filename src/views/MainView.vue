@@ -14,8 +14,8 @@
 			</n-space>
 		</n-layout-header>
 		<n-layout-content
-			class="my-layout"
-			style="height: 680px;"
+			:class="currentStep == 1 ? 'my-layout' : ''"
+			style="height: 700px;"
 		>
 			<n-space
 				vertical
@@ -106,6 +106,16 @@
 						<n-select
 							v-model:value="info.lens"
 							:options="lens"
+							key-field="id"
+							value-field="label"
+						/>
+					</n-form-item>
+					<n-form-item v-if="otherDevices.length"
+						label="更多设备"
+					>
+						<n-select multiple placeholder="可多选"
+							v-model:value="info.otherDevice"
+							:options="otherDevices"
 							key-field="id"
 							value-field="label"
 						/>
@@ -202,7 +212,12 @@
 	>
 		<n-spin :show="emailSending">
 			<n-space vertical>
-				{{ emailContent.header }}
+				<n-text>
+					{{ emailContent.header }}
+				</n-text>
+				<n-text>
+					{{ emailContent.header2 }}
+				</n-text>
 				<n-input
 					placeholder="邮件敬语，可为空"
 					v-model:value="emailContent.start"
@@ -338,15 +353,19 @@ export default defineComponent({
 			text: "",
 			src: null,
 			header: "",
+			header2: "",
 			start: "",
 			end: "",
 		});
 		const elseSetting = window.electronAPI.getData("elseInfo") || {};
-		const t1 = window.electronAPI.getData("camera");
-		const t2 = window.electronAPI.getData("lens");
+		const devices = window.electronAPI.getData("devices");
+		const t1 = devices.filter(d => d.type == "camera");
+		const t2 = devices.filter(d => d.type == "lens");
+		const t3 = devices.filter(d => d.type == "other" || d.type == "tele");
 		let cameras = ref(t1);
 		let lens = ref(t2);
-
+		let otherDevices = ref(t3);
+		
 		let info = ref({
 			title: null,
 			desc: null,
@@ -354,6 +373,7 @@ export default defineComponent({
 			place: null,
 			camera: null,
 			lens: null,
+			otherDevice: null,
 			shutter: null,
 			aperture: null,
 			iso: null,
@@ -417,6 +437,7 @@ export default defineComponent({
 			emailPreview.value = true;
 			emailContent.value = Object.assign({}, item);
 			emailContent.value["header"] = "收件人：" + item["to"];
+			emailContent.value["header2"] = "主题：" + item['subject'];
 			const emailAttachInfo = await window.electronAPI.getEmailAttach(type);
 			emailContent.value["src"] = emailAttachInfo;
 
@@ -484,6 +505,7 @@ export default defineComponent({
 			infoRes,
 			cameras,
 			lens,
+			otherDevices,
 			imgMap,
 			next,
 			prev,
@@ -504,7 +526,7 @@ export default defineComponent({
 .n-layout-header,
 .n-layout-footer {
 	background: rgba(16, 16, 20, 0.82);
-	padding: 24px;
+	padding: 20px;
 }
 </style>
 
@@ -515,9 +537,9 @@ export default defineComponent({
 	align-items: center;
 }
 
-.n-layout-scroll-container .my-a {
+/* .n-layout-scroll-container .my-a {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-}
+} */
 </style>

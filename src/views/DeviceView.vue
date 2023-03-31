@@ -1,35 +1,37 @@
 <template>
-	<n-grid
-		x-gap="10"
-		:cols="2"
+	<n-space vertical>
+		<n-space justify="end"><n-button
+				type="success"
+				@click="openAddDialog()"
+			>
+				新增设备
+			</n-button></n-space>
+
+		<table-comp
+			:data="devices"
+			@del="delDevice"
+		/>
+	</n-space>
+
+	<n-modal
+		v-model:show="dialogShow"
+		preset="dialog"
+		title="新增设备"
+		positive-text="确定"
+		@positive-click="addDevice"
 	>
-		<n-gi>
-			<n-space vertical>
-				<n-space justify="end"><n-button
-						type="success"
-						@click="openAddDialog(1)"
-					>
-						新增相机
-					</n-button></n-space>
-
-				<table-comp
-					:data="cameras"
-					@del="delCameraItem"
-				/>
-			</n-space>
-		</n-gi>
-		<n-gi>
-			<n-space vertical>
-				<n-space justify="end"><n-button type="success" @click="openAddDialog(2)">
-						新增镜头
-					</n-button></n-space>
-				<table-comp :data="lens" @del="delLensItem" />
-			</n-space>
-		</n-gi>
-	</n-grid>
-
-	<n-modal v-model:show="dialogShow" preset="dialog" title="新增设备" positive-text="确定" @positive-click="addDevice">
-		<div> <n-input v-model:value="addValue" type="text" :placeholder="addType == 1 ? '输入相机名称' : '输入镜头型号'" /></div>
+		<n-space vertical>
+			<n-select
+				v-model:value="addType"
+				:options="addTypes"
+				@update:value="handleTypeChange"
+			/>
+			<n-input
+				v-model:value="addValue"
+				type="text"
+				:placeholder="placeHolder"
+			/>
+		</n-space>
 	</n-modal>
 </template>
 
@@ -37,67 +39,103 @@
 import TableComp from "@/components/TableComp.vue";
 import { ref, defineComponent, toRaw } from "vue";
 import { uuid } from "@/utils/util";
-import { NSpace, NButton, NGrid, NGi, NModal, NInput } from "naive-ui";
+import {
+	NSpace,
+	NButton,
+	NModal,
+	NInput,
+	NSelect,
+	SelectOption,
+} from "naive-ui";
 
+const addTypes = [
+	{
+		value: "camera",
+		label: "相机",
+	},
+	{
+		value: "lens",
+		label: "镜头",
+	},
+	{
+		value: "tele",
+		label: "赤道仪",
+	},
+	{
+		value: "other",
+		label: "其它",
+	},
+];
+const typeNames = {
+	camera: "相机",
+	lens: "镜头",
+	tele: "赤道仪",
+	other: "其它",
+};
 export default defineComponent({
 	components: {
 		TableComp,
 		NSpace,
 		NButton,
-		NGrid,
-		NGi,NModal,NInput
+		NModal,
+		NInput,
+		NSelect,
 	},
 	setup() {
-		let t1 = window.electronAPI.getData("camera");
-		let t2 = window.electronAPI.getData("lens");
-		let cameras = ref(t1);
-		let lens = ref(t2);
+		let t1 = window.electronAPI.getData("devices");
+		let devices = ref(t1);
 
 		let dialogShow = ref(false);
 		let addValue = ref("");
-		let addType = ref(1); //1 是相机 2 是镜头
+		let addType = ref("camera");
+		let placeHolder = ref("输入相机名称");
 
-		const openAddDialog = (type) => {
-			addType.value = type;
+		const openAddDialog = () => {
 			dialogShow.value = true;
 		};
 
 		const addDevice = () => {
-			if(!addValue.value) {
-				return;
+			if (!addValue.value) {
+				return false;
 			}
-			let newItem = { id: uuid(), label: addValue.value };
-			if(addType.value == 1) {
-				cameras.value.push(newItem);
-				window.electronAPI.setData("camera", toRaw(cameras.value));
-			} else {
-				lens.value.push(newItem);
-				window.electronAPI.setData("lens", toRaw(lens.value));
-			}
-			addValue.value = '';
+			let typeName = addType.value;
+			let newItem = {
+				id: typeName + "-" + uuid(),
+				type: typeName,
+				typeName: typeNames[typeName],
+				label: addValue.value,
+			};
+			devices.value.push(newItem);
+			window.electronAPI.setData("devices", toRaw(devices.value));
+			addValue.value = "";
 			dialogShow.value = false;
 		};
 
-		const delCameraItem = (delId) => {
-			cameras.value = cameras.value.filter(item => item.id != delId);
-			window.electronAPI.setData("camera", toRaw(cameras.value));
+		const delDevice = (delId) => {
+			devices.value = devices.value.filter((item) => item.id != delId);
+			window.electronAPI.setData("devices", toRaw(devices.value));
 		};
 
-		const delLensItem = (delId) => {
-			lens.value = lens.value.filter(item => item.id != delId);
-			window.electronAPI.setData("lens", toRaw(lens.value));
+		const handleTypeChange = (value: string, option: SelectOption) => {
+			// console.log(value);
+			if(value == 'other') {
+				placeHolder.value = '输入设备名称'
+			} else {
+				placeHolder.value = `输入${typeNames[value]}名称`
+			}
 		};
 
 		return {
 			dialogShow,
 			addType,
 			addValue,
-			cameras,
-			lens,
-			delCameraItem,
-			delLensItem,
+			devices,
+			addTypes,
+			placeHolder,
+			delDevice,
 			openAddDialog,
-			addDevice
+			addDevice,
+			handleTypeChange
 		};
 	},
 });
