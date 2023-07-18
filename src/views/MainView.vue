@@ -207,7 +207,9 @@
 		preset="dialog"
 		title="邮件预览"
 		:positive-text="emailSending ? '发送中...' : '发送'"
+		negative-text="图片另存为"
 		@positive-click="sendEmail"
+		@negative-click="saveAttach"
 		:mask-closable="false"
 	>
 		<n-spin :show="emailSending">
@@ -217,6 +219,9 @@
 				</n-text>
 				<n-text>
 					{{ emailContent.header2 }}
+				</n-text>
+				<n-text>
+					{{ emailContent.header3 }}
 				</n-text>
 				<n-input
 					placeholder="邮件敬语，可为空"
@@ -230,6 +235,13 @@
 				<n-input
 					placeholder="邮件结语，可为空"
 					v-model:value="emailContent.end"
+				></n-input>
+				<n-checkbox v-model:checked="testEmail">
+					测试（勾选表示忽略收件人，用测试邮箱作为收件人）
+				</n-checkbox>
+				<n-input
+					placeholder="测试收件人"
+					v-model:value="testMailTo"
 				></n-input>
 				<n-space vertical
 					v-if="emailContent.src"
@@ -284,6 +296,7 @@ import {
 	NModal,
 	NText,
 	NSpin,
+	NCheckbox,
 	FormRules,
 	useMessage,
 } from "naive-ui";
@@ -337,6 +350,7 @@ export default defineComponent({
 		NModal,
 		NText,
 		NSpin,
+		NCheckbox
 	},
 	setup() {
 		const message = useMessage();
@@ -354,10 +368,11 @@ export default defineComponent({
 			src: null,
 			header: "",
 			header2: "",
+			header3: "",
 			start: "",
 			end: "",
 		});
-		const elseSetting = window.electronAPI.getData("elseInfo") || {};
+		const emailContentInfoSetting = window.electronAPI.getData("emailContentInfo") || {};
 		const devices = window.electronAPI.getData("devices");
 		const t1 = devices.filter(d => d.type == "camera");
 		const t2 = devices.filter(d => d.type == "lens");
@@ -366,7 +381,7 @@ export default defineComponent({
 		let lens = ref(t2);
 		let otherDevices = ref(t3);
 		
-		let info = ref({
+		const t4 = window.electronAPI.getData("photoInfo") || {
 			title: null,
 			desc: null,
 			date: null,
@@ -377,10 +392,15 @@ export default defineComponent({
 			shutter: null,
 			aperture: null,
 			iso: null,
-			other: null,
-		});
+			other: null
+		};
+		let info = ref(t4);
 
 		let infoRes = ref([]);
+
+		let testEmail = ref(false);
+		const t5 = window.electronAPI.getData("testMailTo") || '';
+		let testMailTo = ref(t5);
 
 		const loadImg = async () => {
 			let imgData = await window.electronAPI.getImg();
@@ -414,8 +434,13 @@ export default defineComponent({
 						let rawData = toRaw(info.value);
 						rawData["imgType"] = imgInfo["format"];
 						let t = getInfoRes(rawData, userInfo);
+						if(!t) {
+							message.error("拍摄参数不能全为空");
+							return;
+						}
 						infoRes.value = t;
 						currentStep.value++;
+						window.electronAPI.setData("photoInfo", rawData);
 					} else {
 						console.log(errors);
 					}
@@ -438,14 +463,36 @@ export default defineComponent({
 			emailContent.value = Object.assign({}, item);
 			emailContent.value["header"] = "收件人：" + item["to"];
 			emailContent.value["header2"] = "主题：" + item['subject'];
+			emailContent.value["header3"] = "附件名：" + item['attachName']
+			// console.log(emailContent.value);
+			
 			const emailAttachInfo = await window.electronAPI.getEmailAttach(type);
 			emailContent.value["src"] = emailAttachInfo;
 
-			emailContent.value["start"] = elseSetting[type + "start"] || "";
-			emailContent.value["end"] = elseSetting[type + "end"] || "";
+			emailContent.value["start"] = emailContentInfoSetting[type + "start"] || "";
+			emailContent.value["end"] = emailContentInfoSetting[type + "end"] || "";
 		};
 
+		const saveAttach = async () => {
+			let val = emailContent.value;
+			// console.log(1, val);
+			let saveRes = await window.electronAPI.saveImg(val['attachName'], val['src']['path']);
+			const status = saveRes["status"];
+			if (status) {
+				message.success("保存成功");
+			} else {
+				console.log("save img fail", saveRes);
+				emailMsg.value = "保存失败：" + saveRes["msg"];
+			}
+			return false;
+		}
+
 		const sendEmail = async () => {
+			const mailInUse = window.electronAPI.getData("mailInUse");
+			if (!mailInUse) {
+				message.warning("未配置邮件客户端");
+				return false;
+			}
 			if(!emailContent.value["src"]) {
 				message.warning("请等待图片加载完成");
 				return false;
@@ -458,17 +505,31 @@ export default defineComponent({
 			let val = emailContent.value;
 			let text = val["text"];
 			if (val["start"]) {
-				text = val["start"] + "\n" + text;
-				elseSetting[val.type + "start"] = val["start"];
+				text = val["start"] + "\n\n" + text;
+				emailContentInfoSetting[val.type + "start"] = val["start"];
 			}
 			if (val["end"]) {
 				text = text + "\n\n" + val["end"];
-				elseSetting[val.type + "end"] = val["end"];
+				emailContentInfoSetting[val.type + "end"] = val["end"];
 			}
-			window.electronAPI.setData("elseInfo", elseSetting);
+			window.electronAPI.setData("emailContentInfo", emailContentInfoSetting);
 
+			let mailTo = val["to"];
+			const testMailToVal = testMailTo.value;
+			if(testEmail.value) {
+				if(testMailToVal) {
+					mailTo = testMailToVal;
+				} else {
+					message.warning("测试邮箱不能为空");
+					emailSending.value = false;
+					return false;
+				}
+			}
+			if(testMailToVal) {
+				window.electronAPI.setData("testMailTo", toRaw(testMailToVal));
+			}
 			const mailData = {
-				to: val["to"],
+				to: mailTo,
 				subject: val["subject"],
 				text,
 				attachments: [
@@ -507,12 +568,15 @@ export default defineComponent({
 			lens,
 			otherDevices,
 			imgMap,
+			testEmail,
+			testMailTo,
 			next,
 			prev,
 			loadImg,
 			copy,
 			previewEmail,
 			sendEmail,
+			saveAttach,
 			dateDisabled(ts: number) {
 				return ts > Date.now();
 			},

@@ -84,7 +84,7 @@ export default defineComponent({
 	setup() {
 		let t1 = window.electronAPI.getData("devices");
 		let devices = ref(t1);
-
+		// let aa = reactive([{a:1},{a:2},{a:3}]);
 		let dialogShow = ref(false);
 		let addValue = ref("");
 		let addType = ref("camera");
@@ -93,6 +93,14 @@ export default defineComponent({
 		const openAddDialog = () => {
 			dialogShow.value = true;
 		};
+
+		// 创建一个过滤条件的 ref
+		// const delCondition = ref('0');
+
+		// 创建一个计算属性，用于对原始数组进行过滤
+		// const filteredArray = computed(() => {
+		// 	return devices.value.filter(item => item.id != delCondition.value);
+		// });
 
 		const addDevice = () => {
 			if (!addValue.value) {
@@ -106,14 +114,21 @@ export default defineComponent({
 				label: addValue.value,
 			};
 			devices.value.push(newItem);
-			window.electronAPI.setData("devices", toRaw(devices.value));
+			window.electronAPI.setData("devices", devices.value.map(toRaw));
 			addValue.value = "";
 			dialogShow.value = false;
 		};
 
 		const delDevice = (delId) => {
-			devices.value = devices.value.filter((item) => item.id != delId);
-			window.electronAPI.setData("devices", toRaw(devices.value));
+			//这个方法有bug 暂未解决
+			// console.log(aa);
+			// aa = aa.filter(item => item.a != 10);
+			// console.log(aa, toRaw(aa));
+
+			devices.value = devices.value.filter(item => item.id != delId);
+
+			// console.log(11, devices.value.map(toRaw), toRaw(devices.value));
+			window.electronAPI.setData("devices", devices.value.map(toRaw));
 		};
 
 		const handleTypeChange = (value: string, option: SelectOption) => {

@@ -92,19 +92,35 @@ const resMaps = {
 			"dateStr": "拍摄日期",
 			"desc": "图片说明"
 		}
+	},
+	"apod": {
+		"name": "北京天文馆",
+		"email": "apod@bjp.org.cn",
+		"keys": ["title", "userName", "dateStr", "place", "device", "param", "desc"],
+		"kvName": {
+			"title": "作品名称",
+			"userName": "作者名字",
+			"dateStr": "拍摄日期",
+			"place": "拍摄地点",
+			"device": "拍摄器材",
+			"param": "拍摄参数",
+			"desc": "图片说明"
+		}
 	}
 }
 
 let attachNameMap = {
 	"csva": "",
 	"nc": "",
-	"cs": ""
+	"cs": "",
+	"apod": ""
 }
 
 let subjectMap = {
 	"csva": "",
 	"nc": "",
-	"cs": ""
+	"cs": "",
+	"apod": ""
 }
 
 
@@ -133,24 +149,41 @@ const getInfoRes = (data, userInfo) => {
 	data['dateStr'] = formatTime(data['date'])
 	data['device'] = data['camera'] + ' + ' + data['lens'];
 	const otherDevice = data['otherDevice'] || [];
-	if(otherDevice) {
+	if(otherDevice.length > 0) {
 		data['device'] = data['device'] + ' + ' + otherDevice.join(' + ')
 	}
-	let other = data['other'] ? `, ${data['other']}` : '';
-	data['param'] = `${data['aperture']}, ${data['shutter']}, iso ${data['iso']}${other}`;
-	
+	let paramArr = [];
+	if(data['aperture']) {
+		paramArr.push(data['aperture']);
+	}
+	if(data['shutter']) {
+		paramArr.push(data['shutter']);
+	}
+	if(data['iso']) {
+		paramArr.push(`iso ${data['iso']}`);
+	}
+	if(data['other']) {
+		paramArr.push(data['other']);
+	}
+	if(paramArr.length == 0) {
+		return null;	//参数不能都不填
+	}
+	data['param'] = paramArr.join(", ");
+
 	data['fileName'] = title + "." + data['imgType']
 	data['param2'] = data['device'] + '，' + data['param']
 
 	attachNameMap["csva"] = data["nick"] + "-" + data['fileName'];
 	attachNameMap["nc"] = data['fileName']
 	attachNameMap["cs"] = data['fileName']
+	attachNameMap["apod"] = data['userName'] + " - " +  data['fileName']
 
 	subjectMap["csva"] = data["nick"] + "-" + title;
 	subjectMap["nc"] = "【作品投稿】- " + title;
 	subjectMap["cs"] = subjectMap["nc"];
+	subjectMap["apod"] = "“星空之美”影像作品投稿 - " + data['userName'];
 
-	return [getResData('csva', data), getResData('nc', data), getResData('cs', data)];
+	return [getResData('csva', data), getResData('nc', data), getResData('cs', data), getResData('apod', data)];
 }
 
 const getRule = (msg='不能为空') => {

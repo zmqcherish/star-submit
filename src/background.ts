@@ -122,6 +122,13 @@ ipcMain.handle('get-img', async (event) => {
 	}
 })
 
+ipcMain.handle('save-img', async (event, fileName) => {
+	let res = dialog.showSaveDialogSync({
+		title: '保存图片',
+		defaultPath: fileName
+	})
+	return res;
+})
 
 ipcMain.handle('get-tmp-path', async (event) => {
 	return app.getPath('userData');

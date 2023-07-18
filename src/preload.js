@@ -1,12 +1,24 @@
 const path = require('path')
 const sharp = require('sharp');
+const fs = require('fs');
 const { contextBridge, ipcRenderer, clipboard } = require('electron')
 
 import { getStoreVal, setStoreVal } from './utils/db'
 
+const saveImg = async (fileName, srcPath) => {
+	try {
+		let savePath = await ipcRenderer.invoke('save-img', fileName);
+		if (savePath) {
+			fs.copyFileSync(srcPath, savePath);
+		}
+	} catch (err) {
+		console.error('拷贝文件时出错:', err);
+		return {status: false, msg: err};
+	}
+	return {status: true};
+}
 
 const getImg = async () => {
-	// await getEmailAttach('nc')
 	let imgPath = await ipcRenderer.invoke('get-img');
 	if (!imgPath) {
 		return null;
@@ -27,7 +39,7 @@ const getImg = async () => {
 
 //夜空中国 窄边至少800像素，长边至多2000像素，文件大小在1M以内，拼接作品可适当放宽
 //csva 正常横图长边1080、正常竖图短边1080、特殊接片短边1080
-//国家天文 10M内
+//中国国家天文 10M内
 const sizeType = {
 	'csva': 1080, 'nc':2000
 }
@@ -35,7 +47,8 @@ const sizeType = {
 const getEmailAttach = async (type) => {
 	const tempPath = await ipcRenderer.invoke('get-tmp-path');
 	const imgRawInfo = getData('imgInfo');
-	const imgOutPath = path.join(tempPath, `${type}.${imgRawInfo['format']}`)
+	const fileName = `${type}.${imgRawInfo['format']}`;
+	const imgOutPath = path.join(tempPath, fileName);
 	const imgRawPath = imgRawInfo['path'];
 	try {
 		let newSize;
@@ -72,7 +85,7 @@ const getEmailAttach = async (type) => {
 		resDataInfo['sizeContent'] = imgSizeContent;
 		resDataInfo['path'] = imgOutPath;
 		resDataInfo['data'] = imgShowData;
-		console.log(11, resDataInfo);
+		// console.log(11, resDataInfo);
 		return resDataInfo;
 	} catch (error) {
 		console.error('getEmailAttach error', error);
@@ -80,9 +93,16 @@ const getEmailAttach = async (type) => {
 	return null;
 }
 
+// const openDefaultMailClient = (mailData) => {
+// 	const attachmentPath = mailData['attachments'][0]['path'];	//一般不支持附件
+// 	console.log(attachmentPath);
+// 	const emailLink = `mailto:recipient@example.com?subject=邮件主题&body=邮件正文&attachment=${attachmentPath}`;
+// 	console.log(emailLink);
+// 	shell.openExternal(emailLink);
+// }
 
 const sendEmail = async (mailData) => {
-	const m = getData('mail');
+	const m = getMailSetting();
 	const mailConfig = {
 		// secure: false,
 		auth: {
@@ -112,8 +132,12 @@ const sendEmail = async (mailData) => {
 	// 	]
 	// }
 	mailData['from'] = m['email'];
-	mailData['to'] = 'zmqhebetien19830330@gmail.com';
 
+	//测试
+	// console.log(mailData['to']);
+	// mailData['to'] = '570235977@qq.com';
+	// mailData['to'] = 'zmqcherish@outlook.com';
+	
 	let res = await ipcRenderer.invoke('send-email', mailConfig, mailData);
 	return res;
 }
@@ -126,12 +150,19 @@ const getData = (k) => {
 	return getStoreVal(k);
 }
 
+
 const setData = (k, v) => {
+	// console.log(k, v);
 	setStoreVal(k, v);
 }
 
 const copyText = (txt) => {
 	clipboard.writeText(txt);
+}
+
+const getMailSetting = () => {
+	const mailK = getData('mailInUse');
+	return getData(mailK);
 }
 
 
@@ -168,6 +199,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 	getData,
 	setData,
 	getImg,
+	saveImg,
 	copyText,
 	sendEmail,
 	getEmailAttach,

@@ -1,5 +1,6 @@
 export interface IElectronAPI {
 	getImg: () => Promise<void>;
+	saveImg: (fileName, srcPath) => Promise<void>;
 	getData: (k) => Any;
 	setData: (k, v) => void;
 	copyText: (data) => void;

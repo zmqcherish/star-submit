@@ -84,6 +84,11 @@
 						placeholder="根据邮箱类型填写授权码或密码"
 					/>
 				</n-form-item>
+				<n-form-item label="" path="use">
+					<n-checkbox v-model:checked="emailInfo.use">
+						主邮箱
+					</n-checkbox>
+				</n-form-item>
 			</n-form>
 			<n-button
 				type="primary"
@@ -97,18 +102,18 @@
 		</n-tab-pane>
 
 		<n-tab-pane
-			name="else"
-			tab="其它"
+			name="emailContent"
+			tab="邮件正文"
 		>
 			<n-form
 				ref="elseFormRef"
-				:model="elseInfo"
+				:model="emailContentInfo"
 			>
 				<input-form
-					v-for="(item, index) in elseMap"
+					v-for="(item, index) in emailContentMap"
 					:key="index"
 					:label="item.v"
-					v-model:value="elseInfo[item.k]"
+					v-model:value="emailContentInfo[item.k]"
 				></input-form>
 			</n-form>
 			<n-button
@@ -116,7 +121,7 @@
 				block
 				secondary
 				strong
-				@click="saveElse"
+				@click="saveEmailContentInfo"
 			>
 				保存
 			</n-button>
@@ -139,6 +144,7 @@ import {
 	NTabs,
 	NTabPane,
 	NInput,
+	NCheckbox,
 	SelectOption,
 } from "naive-ui";
 import { mailHosts, getRule } from "@/utils/util";
@@ -183,13 +189,15 @@ const userFormRules: FormRules = {
 	],
 };
 
-const elseMap = [
+const emailContentMap = [
 	{ k: "csvastart", v: "CSVA邮件敬语" },
 	{ k: "csvaend", v: "CSVA邮件结语" },
 	{ k: "ncstart", v: "夜空中国邮件敬语" },
 	{ k: "ncend", v: "夜空中国邮件结语" },
-	{ k: "csstart", v: "国家天文邮件敬语" },
-	{ k: "csend", v: "国家天文邮件结语" },
+	{ k: "csstart", v: "中国国家天文邮件敬语" },
+	{ k: "csend", v: "中国国家天文邮件结语" },
+	{ k: "apodstart", v: "北京天文馆邮件敬语" },
+	{ k: "apodend", v: "北京天文馆邮件结语" },
 ];
 
 const mailMap1 = [
@@ -215,6 +223,7 @@ export default defineComponent({
 		NTabs,
 		NTabPane,
 		NInput,
+		NCheckbox
 	},
 	setup() {
 		const message = useMessage();
@@ -222,33 +231,41 @@ export default defineComponent({
 		const userFormRef = ref<FormInst | null>(null);
 		const mailFormRef = ref<FormInst | null>(null);
 
-		const t1 = window.electronAPI.getData("mail") || {
+		const t0 = window.electronAPI.getData("mailInUse");
+		const t1 = t0 ? window.electronAPI.getData(t0) : {
 			service: null,
 			host: null,
 			port: null,
 			email: null,
 			pwd: null,
+			use: false
 		};
 		const t2 = window.electronAPI.getData("user") || {
 			name: null,
 			nick: null,
 			phone: null,
 		};
-		const t3 = window.electronAPI.getData("elseInfo") || {
+		const t3 = window.electronAPI.getData("emailContentInfo") || {
 			csvastart: null,
 			csvaend: null,
 			ncstart: null,
 			ncend: null,
 		};
+		let mailInUseVal = ref(t0);
 		let emailInfo = ref(t1);
 		let userInfo = ref(t2);
-		let elseInfo = ref(t3);
+		let emailContentInfo = ref(t3);
 
 		const saveMail = () => {
-			mailFormRef.value?.validate((errors) => {
+			mailFormRef.value?.validate(errors => {
 				if (!errors) {
 					let t = toRaw(emailInfo.value);
-					window.electronAPI.setData("mail", t);
+					const mailK = "mail-" + t.service;
+					window.electronAPI.setData(mailK, t);
+					if(t.use) {
+						mailInUseVal.value = mailK;
+						window.electronAPI.setData('mailInUse', mailK);
+					}
 					message.success("邮箱配置成功");
 				} else {
 					console.log(errors);
@@ -269,15 +286,26 @@ export default defineComponent({
 			});
 		};
 
-		const saveElse = () => {
-			let t = toRaw(elseInfo.value);
-			window.electronAPI.setData("elseInfo", t);
+		const saveEmailContentInfo = () => {
+			let t = toRaw(emailContentInfo.value);
+			window.electronAPI.setData("emailContentInfo", t);
 			message.success("保存成功");
 		};
 
 		const hostChange = (value: string, opt: SelectOption) => {
-			emailInfo.value["host"] = opt["host"];
-			emailInfo.value["port"] = opt["port"];
+			const mailK = "mail-" + value;
+			const t = window.electronAPI.getData(mailK) || {};
+			// console.log(22, t, mailInUseVal.value, value, opt);
+			
+			emailInfo.value["email"] = t["email"] || '';
+			emailInfo.value["pwd"] = t["pwd"] || '';
+			emailInfo.value["host"] = t["host"];
+			emailInfo.value["port"] = t["port"];
+			if(!mailInUseVal.value || mailInUseVal.value == mailK) {
+				emailInfo.value["use"] = true;
+			} else {
+				emailInfo.value["use"] = false;
+			}
 		};
 
 		return {
@@ -288,14 +316,14 @@ export default defineComponent({
 			userFormRules,
 			userInfo,
 			emailInfo,
-			elseInfo,
-			elseMap,
+			emailContentInfo,
+			emailContentMap,
 			mailMap,
 			mailMap1,
 			userMap,
 			saveMail,
 			saveUser,
-			saveElse,
+			saveEmailContentInfo,
 			hostChange,
 		};
 	},
