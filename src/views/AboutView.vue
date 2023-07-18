@@ -60,15 +60,10 @@ const displayData = [
 
 const history = [
 	{
-		title: 'v1.0.0',
+		title: 'v1.0.1',
 		content: '正式发布',
 		time: '2023-07-18'
-	},
-	// {
-	// 	title: 'v1.0',
-	// 	content: '正式发布',
-	// 	time: '2023-03-22'
-	// },
+	}
 ]
 
 export default defineComponent({

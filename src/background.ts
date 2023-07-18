@@ -17,6 +17,7 @@ protocol.registerSchemesAsPrivileged([
 async function createWindow() {
 	// Create the browser window.
 	const win = new BrowserWindow({
+		title: '星空图片投稿工具v1.0.1',
 		width: 1200,
 		height: 880,
 		resizable: false,

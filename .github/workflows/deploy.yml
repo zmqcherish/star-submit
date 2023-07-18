@@ -34,13 +34,13 @@ jobs:
         if: startsWith(matrix.os, 'windows')
         run: npm run electron:build-win
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: package-mac
         if: startsWith(matrix.os, 'macos')
         run: npm run electron:build
         env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
         # step5: cleanup artifacts in dist_electron
       - name: cleanup artifacts for win
