@@ -66,7 +66,7 @@ jobs:
           files: dist_electron/**
           # tag_name: ${{ github.ref }}
           # release_name: Release ${{ github.ref }}
-          token: ${{ secrets.GH_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Deploy to Server # 第二步，rsync推文件（Windows不支持）
       #   uses: easingthemes/ssh-deploy@main
