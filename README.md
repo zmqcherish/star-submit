@@ -12,7 +12,9 @@
 - 如果需要使用发送邮件功能，需要配置邮箱的发件人和对应邮箱授权码，不同邮箱授权码获取方式不同
 1. QQ邮箱：[账号与安全](https://wx.mail.qq.com/account)-> 安全设置 -> 生成授权码。[点击查看详情](https://wx.mail.qq.com/list/readtemplate?name=app_intro.html#/agreement/authorizationCode)
 2. 163邮箱：[点击查看详情](https://help.mail.163.com/faq.do?m=list&categoryID=90) -> 如何开启客户端协议？
-3. GMail邮箱：（较为繁琐不推荐）
+3. GMail邮箱：较为繁琐不推荐，配置方法见下文
+4. 其它邮箱获取方式可自行查阅（文档待更新）
+### GMail邮箱配置方法
 - 打开Gmail网页版：[https://mail.google.com/](https://mail.google.com/)
 - 点击右上角“设置”图标，查看所有设置
 - 点击转发和 POP/IMAP 标签页，在“IMAP 访问”部分，选择启用 IMAP
@@ -20,8 +22,8 @@
 - 开启账号两步验证：[帐号和导入](https://mail.google.com/mail/u/0/#settings/accounts) -> 更改密码恢复选项
 - 生成16位应用专用密码：[https://security.google.com/settings/security/apppasswords](https://security.google.com/settings/security/apppasswords)
 - 然后可使用邮箱和16位密码进行邮件发送
-[参考1](https://support.google.com/mail/answer/75725?hl=zh-CN) | [参考2](https://blog.csdn.net/bichir/article/details/51506474)
-4. 其它邮箱获取方式可自行查阅（文档待更新）
+- [参考1](https://support.google.com/mail/answer/75725?hl=zh-CN) | [参考2](https://blog.csdn.net/bichir/article/details/51506474)
+
 
 ## 本地开发
 ```
@@ -51,7 +53,7 @@ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
 - 小红书：冰山里求生的武装 ｜ 微博：甄星cherish ｜ 微信：cherish_hebe
 
 ## 软件截图
-![alt 软件截图1](https://imgse.com/i/pCTYwU1)
-![alt 软件截图2](https://imgse.com/i/pCTY04x)
-![alt 软件截图3](https://imgse.com/i/pCTYDC6)
-![alt 软件截图4](https://imgse.com/i/pCTYsgO)
+![alt 软件截图1](https://s1.ax1x.com/2023/07/18/pCTYwU1.png)
+![alt 软件截图2](https://s1.ax1x.com/2023/07/18/pCTY04x.png)
+![alt 软件截图3](https://s1.ax1x.com/2023/07/18/pCTYDC6.png)
+![alt 软件截图4](https://s1.ax1x.com/2023/07/18/pCTYsgO.png)
