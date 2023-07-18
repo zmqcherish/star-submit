@@ -60,7 +60,7 @@ const displayData = [
 
 const history = [
 	{
-		title: 'v1.0.5',
+		title: 'v1.0.8',
 		content: '正式发布',
 		time: '2023-07-18'
 	}

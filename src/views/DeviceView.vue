@@ -82,7 +82,7 @@ export default defineComponent({
 		NSelect,
 	},
 	setup() {
-		let t1 = window.electronAPI.getData("devices");
+		let t1 = window.electronAPI.getData("devices") || [];
 		let devices = ref(t1);
 		// let aa = reactive([{a:1},{a:2},{a:3}]);
 		let dialogShow = ref(false);
