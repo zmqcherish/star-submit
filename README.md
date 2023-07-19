@@ -55,7 +55,7 @@ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
 
 ## 关于我
 - 风格Pixel成员 | 星联CSVA星空摄影师 ｜ RAW.cn 供稿人 ｜ 视觉中国签约摄影师
-- 小红书：冰山里求生的武装 ｜ 微博：甄星cherish ｜ 微信：cherish_hebe
+- 小红书：[冰山里求生的武装](https://www.xiaohongshu.com/user/profile/5d20bde80000000010013003) ｜ 微博：[甄星cherish](https://weibo.com/zmqcherish) ｜ 微信：cherish_hebe
 
 ## 软件截图
 ![alt 软件截图1](https://s1.ax1x.com/2023/07/18/pCTYwU1.png)
