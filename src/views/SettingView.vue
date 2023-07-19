@@ -269,20 +269,25 @@ export default defineComponent({
 					message.success("邮箱配置成功");
 				} else {
 					console.log(errors);
+					message.success("邮箱配置失败");
 				}
+			}).catch((err) => {	//自定义验证器异常
+				console.log(211, err);
 			});
 		};
 
 		const saveUser = () => {
-			userFormRef.value?.validate((errors) => {
+			userFormRef.value?.validate(errors => {
 				if (!errors) {
 					let t = toRaw(userInfo.value);
 					window.electronAPI.setData("user", t);
 					message.success("用户信息保存成功");
 				} else {
-					console.log(errors);
-					// message.error("保存失败");
+					console.log(1, errors);
+					message.error("保存失败");
 				}
+			}).catch((err) => {	//自定义验证器异常
+				console.log(21, err);
 			});
 		};
 

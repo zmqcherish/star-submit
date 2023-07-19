@@ -1,4 +1,11 @@
 <template>
+	<n-space justify="center">
+		<n-h1 type="success">
+			<n-text type="success">
+				星空图片投稿工具v1.0.9
+			</n-text>
+		</n-h1>
+	</n-space>
 	<div
 		v-for="(item, index) in displayData"
 		:key="index"
@@ -22,7 +29,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
-import { NH2, NH6, NTimeline, NTimelineItem } from "naive-ui";
+import { NH1, NH2, NH6, NTimeline, NTimelineItem, NText, NSpace } from "naive-ui";
 
 const displayData = [
 	{
@@ -60,16 +67,16 @@ const displayData = [
 
 const history = [
 	{
-		title: 'v1.0.8',
+		title: 'v1.0.9',
 		content: '正式发布',
-		time: '2023-07-18'
+		time: '2023-07-19'
 	}
 ]
 
 export default defineComponent({
 	components: {
-		NH2,
-		NH6,NTimeline, NTimelineItem
+		NH1,NH2,
+		NH6,NTimeline, NTimelineItem,NText,NSpace
 	},
 	setup() {
 		return {

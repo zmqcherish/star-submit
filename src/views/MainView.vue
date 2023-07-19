@@ -373,7 +373,7 @@ export default defineComponent({
 			end: "",
 		});
 		const emailContentInfoSetting = window.electronAPI.getData("emailContentInfo") || {};
-		const devices = window.electronAPI.getData("devices");
+		const devices = window.electronAPI.getData("devices") || [];
 		const t1 = devices.filter(d => d.type == "camera");
 		const t2 = devices.filter(d => d.type == "lens");
 		const t3 = devices.filter(d => d.type == "other" || d.type == "tele");
@@ -402,22 +402,32 @@ export default defineComponent({
 		const t5 = window.electronAPI.getData("testMailTo") || '';
 		let testMailTo = ref(t5);
 
+		const checkInit = () => {
+			const t1 = window.electronAPI.checkDevice();
+			const t2 = window.electronAPI.getData("user");
+			if (!t1) {
+				message.error("请先添加设备");
+				return false;
+			}
+
+			if (!t2) {
+				message.error("请先更新个人信息");
+				return false;
+			}
+			return true;
+		}
+
 		const loadImg = async () => {
+			if(!checkInit()) {
+				return false;
+			}
 			let imgData = await window.electronAPI.getImg();
 			imgSrc.value = imgData;
 		};
 
 		const next = () => {
 			if (currentStep.value == 1) {
-				const t1 = window.electronAPI.checkDevice();
-				const t2 = window.electronAPI.getData("user");
-				if (!t1) {
-					message.error("请先添加设备");
-					return;
-				}
-
-				if (!t2) {
-					message.error("请先更新个人信息");
+				if(!checkInit()) {
 					return;
 				}
 

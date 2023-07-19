@@ -144,15 +144,11 @@ const sendEmail = async (mailData) => {
 
 
 const getData = (k) => {
-	if(k == 'camera' || k == 'lens') {
-		return getStoreVal(k) || [];
-	}
 	return getStoreVal(k);
 }
 
 
 const setData = (k, v) => {
-	// console.log(k, v);
 	setStoreVal(k, v);
 }
 
