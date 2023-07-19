@@ -2,7 +2,7 @@
 	<n-space justify="center">
 		<n-h1 type="success">
 			<n-text type="success">
-				星空图片投稿工具v1.0.9
+				星空图片投稿工具v1.1.0
 			</n-text>
 		</n-h1>
 	</n-space>
@@ -67,7 +67,7 @@ const displayData = [
 
 const history = [
 	{
-		title: 'v1.0.9',
+		title: 'v1.1.0',
 		content: '正式发布',
 		time: '2023-07-19'
 	}

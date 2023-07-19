@@ -6,9 +6,9 @@ module.exports = defineConfig({
       // nodeIntegration: true,
       preload: 'src/preload.js',
       builderOptions: {
-        productName: "star", // 项目名，也是生成exe文件的前缀名
-        appId: "star-v1.0.9", // 包名
-        copyright: "@cherish", // 版权信息
+        productName: "星空图片投稿工具", // 项目名，也是生成exe文件的前缀名
+        appId: "star-submit", // 包名
+        copyright: "@张明群", // 版权信息
         compression: "store", // "store" | "normal" | "maximum" 打包压缩情况(store 相对较快)，store 39749kb, maximum 39186kb
         directories: {
           output: "dist_electron" // 输出文件夹
