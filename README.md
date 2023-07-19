@@ -5,6 +5,7 @@
 - 此应用还有更多改进空间，不定期更新。如有bug或其他改进建议，欢迎大家通过最后的联系方式私信指正
 
 ## 下载地址
+- star-x.x.x.dmg为Mac安装包；star.Setup.x.x.x.exe为Windows安装包
 - Github：[点击下载](https://github.com/zmqcherish/star-submit/releases)
 - 百度云：[点击下载](https://pan.baidu.com/s/1qr5c1Eu4nI8FcU8730bz8Q?pwd=star)
 - 阿里云：[点击下载](https://www.aliyundrive.com/s/S7sKNxBC3mr)
