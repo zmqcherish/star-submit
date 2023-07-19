@@ -1,4 +1,4 @@
-# 星空图片投稿工具
+# 星空作品投稿工具
 ## 说明
 - 此应用开发的初衷是方便星空摄影师进行创作投稿
 - 针对国内的星空作品投稿渠道（CSVA、夜空中国、中国国家天文、北京天文馆）本应用可以方便的生成不同渠道所要求的文案格式以及邮件标题及内容等，可以直接进行邮件投递
@@ -59,6 +59,8 @@ npm config set electron_mirror https://npm.taobao.org/mirrors/electron/
 - 风格Pixel成员 | 星联CSVA星空摄影师 ｜ RAW.cn 供稿人 ｜ 视觉中国签约摄影师
 - 小红书：[冰山里求生的武装](https://www.xiaohongshu.com/user/profile/5d20bde80000000010013003) ｜ 微博：[甄星cherish](https://weibo.com/zmqcherish) ｜ 微信：cherish_hebe
 
+## 赞赏
+![alt 赞赏码](https://s1.ax1x.com/2023/07/19/pC7Upee.jpg)
 ## 软件截图
 ![alt 软件截图1](https://s1.ax1x.com/2023/07/18/pCTYwU1.png)
 ![alt 软件截图2](https://s1.ax1x.com/2023/07/18/pCTY04x.png)

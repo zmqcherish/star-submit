@@ -2,7 +2,7 @@
 	<n-space justify="center">
 		<n-h1 type="success">
 			<n-text type="success">
-				星空图片投稿工具v1.1.1
+				星空作品投稿工具v1.1.2
 			</n-text>
 		</n-h1>
 	</n-space>
@@ -26,6 +26,9 @@
 			:time="item.time"
 			/>
 	</n-timeline>
+
+	<n-h2 prefix="bar"> 赞赏 </n-h2>
+	<img src="../assets/zsm.jpg">
 </template>
 
 <script lang="ts">
@@ -72,11 +75,17 @@ const displayData = [
 			"小红书：冰山里求生的武装 ｜ 微博：甄星cherish ｜ 微信：cherish_hebe",
 		],
 	},
+	{
+		title: "项目地址",
+		contents: [
+			"https://github.com/zmqcherish/star-submit",
+		],
+	}
 ];
 
 const history = [
 	{
-		title: 'v1.1.1',
+		title: 'v1.1.2',
 		content: '更新关于页',
 		time: '2023-07-19'
 	},
