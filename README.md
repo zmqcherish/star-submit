@@ -10,7 +10,7 @@
 - star-x.x.x.dmg为Mac安装包；star.Setup.x.x.x.exe为Windows安装包
 - Github：[点击下载](https://github.com/zmqcherish/star-submit/releases)
 - 百度云：[点击下载](https://pan.baidu.com/s/1qr5c1Eu4nI8FcU8730bz8Q?pwd=star)
-- 阿里云：[点击下载](https://www.aliyundrive.com/s/S7sKNxBC3mr)
+
 ## 免责声明
 - 此应用数据保存在本地，不会收集任何用户信息
 - 请自行查阅发件箱是否有发件内容已确保邮件投递成功
