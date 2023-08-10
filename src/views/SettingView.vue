@@ -81,7 +81,7 @@
 						v-model:value="emailInfo['pwd']"
 						type="password"
 						show-password-on="mousedown"
-						placeholder="根据邮箱类型填写授权码或密码"
+						placeholder="根据邮箱类型填写授权码或密码，详情参考关于->邮箱配置"
 					/>
 				</n-form-item>
 				<n-form-item label="" path="use">
