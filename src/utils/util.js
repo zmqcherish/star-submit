@@ -26,6 +26,10 @@ const mailHosts = [
 		'name': '163邮箱',
 	},
 	{
+		'k': '126',
+		'name': '126邮箱',
+	},
+	{
 		'k': 'else',
 		'name': '其它',
 		'host': '',
