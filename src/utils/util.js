@@ -71,7 +71,7 @@ const resMaps = {
 	},
 	"nc": {
 		"name": "夜空中国",
-		"email": "Steed@Mounstar.com",
+		"email": "Steed@NightChina.net",
 		"keys": ["fileName", "nick", "title", "desc", "dateStr", "place", "param2"],
 		"kvName": {
 			"fileName": "作品文件名",
