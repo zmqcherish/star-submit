@@ -2,7 +2,7 @@
 	<n-space justify="center">
 		<n-h1 type="success">
 			<n-text type="success">
-				星空作品投稿工具v1.1.3
+				星空作品投稿工具v1.1.4
 			</n-text>
 		</n-h1>
 	</n-space>
@@ -84,7 +84,12 @@ const displayData = [
 ];
 
 const history = [
-{
+	{
+		title: 'v1.1.4',
+		content: '修改夜空中国邮箱',
+		time: '2025-01-10'
+	},
+	{
 		title: 'v1.1.3',
 		content: '新增126邮箱',
 		time: '2023-08-10'
