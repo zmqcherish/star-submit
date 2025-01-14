@@ -15,7 +15,7 @@ jobs:
       contents: write
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, macos-14-large]
+        os: [windows-latest, macos-14-large]
     steps: # 自动化步骤
       - name: check out code
         uses: actions/checkout@main # 第一步，下载代码仓库
